@@ -17,7 +17,8 @@ class Routes {
             .post(this.controller.addTime);
 
         app.route("/time/:id")
-            .put(this.controller.updateTime);
+            .put(this.controller.updateTime)
+            .delete(this.controller.deleteTime);
 
     }
 }
