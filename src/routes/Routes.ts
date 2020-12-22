@@ -12,6 +12,9 @@ class Routes {
 
         // Default hello 
         app.route("/").get(this.controller.hello);
+        
+        app.route("/time").post(this.controller.addTime);
+
     }
 }
 export {Routes};
