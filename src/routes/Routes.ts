@@ -1,22 +1,20 @@
 import {Request, Response, Application} from "express";
-import {Controller} from "../controller/Controller";
+import {TimeController} from "../controller/TimeController";
 
 class Routes {
-    private controller: Controller;
+    private controller: TimeController;
 
     constructor() {
-        this.controller = new Controller();
+        this.controller = new TimeController();
     }
 
-    public routes(app: Application): void {
-
-        // Default hello 
-        app.route("/").get(this.controller.hello);
-        
+    public routes(app: Application): void {        
         app.route("/time")
+            .get(this.controller.getAllTimes)
             .post(this.controller.addTime);
 
         app.route("/time/:id")
+            .get(this.controller.getTimeById)
             .put(this.controller.updateTime)
             .delete(this.controller.deleteTime);
 

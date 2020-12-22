@@ -1,18 +1,35 @@
 import {Request, Response} from 'express';
-import e = require('express');
-import { DeleteResult } from 'typeorm';
 import {connection} from "../connection/Connection";
 import { Time } from '../entity/Time';
 import { Mapper }  from "../mapper/Mapper";
 
 const mapper = new Mapper();
-class Controller {
+class TimeController {
     constructor() {}
 
-    public hello(req: Request, res: Response) {
-        res.json({
-            "message": "hello world!"
+    public getTimeById(req: Request, res:Response) {
+        connection.then(async conn => {
+            const existingTime = await conn.manager.findOne(Time, req.params.id);
+            if (!existingTime) {
+                res.status(404).send(); 
+                return;
+            }
+            res.status(200).json(existingTime);
+        }).catch(err => {
+            console.error("Error getting time by id", err);
+            res.status(500).json(err);
         });
+    }
+
+    public getAllTimes(req: Request, res:Response) {
+        connection.then(async conn => {
+            const times: Time[] = await conn.manager.find(Time);
+
+            res.json(times);
+        }).catch(err => {
+            console.error("Error getting all times", err);
+            res.status(500).json(err);
+        })
     }
 
     public addTime(req: Request, res:Response) {
@@ -24,7 +41,7 @@ class Controller {
             });
         }).catch(err => {
             console.error("Error adding time", err);
-            res.json(err);
+            res.status(500).json(err);
         })
     }
 
@@ -44,7 +61,7 @@ class Controller {
             });
         }).catch(err => {
             console.error("Error updating time", err);
-            res.json(err);
+            res.status(500).json(err);
         });
     }
 
@@ -63,9 +80,9 @@ class Controller {
             
         }).catch(err => {
             console.log("Error deleting time", err);
-            res.status(400).json(err);
+            res.status(500).json(err);
         })
     }
 
 }
-export {Controller};
+export {TimeController};
