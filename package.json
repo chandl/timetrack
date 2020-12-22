@@ -21,6 +21,7 @@
       "typeorm": "^0.2.29"
    },
    "scripts": {
-      "start": "ts-node src/index.ts"
+      "start": "ts-node src/index.ts",
+      "watch": "ts-node-dev src/index.ts"
    }
 }

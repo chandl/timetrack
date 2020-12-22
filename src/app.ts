@@ -18,7 +18,7 @@ class App {
         this.app.use(bodyParser.urlencoded({extended: false})); // for routing the http request to the controller
         this.app.use(helmet()); // secure http headers
         this.app.use(cors()); // cors support
-        this.app.use(morgan("tiny")); // logging
+        this.app.use(morgan("common")); // logging
 
         this.routePrv = new Routes();
         this.routePrv.routes(this.app);
