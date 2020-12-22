@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Between, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { connection } from "../connection/Connection";
 import { Time } from "../entity/Time";
 import { Mapper } from "../mapper/Mapper";
@@ -23,10 +24,32 @@ class TimeController {
       });
   }
 
+  // todo merge times endpoint
+
   public getAllTimes(req: Request, res: Response) {
+    // Possible Query Parameters for Filtering
+    // Sorting can be done on the frontend
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    const customer = req.query.customer;
+
+    const filter: {[key: string]: any} = {};
+    if (startDate && endDate) {
+        filter.day = Between(startDate, endDate)
+    } else if (startDate) {
+        filter.day = MoreThanOrEqual(startDate);
+    } else if (endDate) {
+        filter.day = LessThanOrEqual(endDate);
+    }
+    if (customer) {
+        filter.customer = customer;
+    }
+    console.log("Getting all times with filter", filter);
+
+    // SEARCH DATABASE
     connection
       .then(async (conn) => {
-        const times: Time[] = await conn.manager.find(Time);
+        const times: Time[] = await conn.manager.find(Time, filter);
 
         res.json(times);
       })
