@@ -34,5 +34,21 @@ class Controller {
         })
     }
 
+    public updateTime(req: Request, res:Response)  {
+        connection.then(async conn => {
+            const existingTime = await conn.manager.findOne(Time, req.params.id);
+            console.log("Updating time; existing", existingTime);
+            const updatedTime = mapper.mapTime(req.body, existingTime);
+            
+            conn.manager.save(updatedTime).then(entity => {
+                console.log("Time updated successfully; updated", entity);
+                res.status(200).json(entity);
+            });
+        }).catch(err => {
+            console.error("Error updating time", err);
+            res.json(err);
+        });
+    }
+
 }
 export {Controller};

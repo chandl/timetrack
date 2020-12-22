@@ -3,8 +3,8 @@ import { Time } from "../entity/Time";
 class Mapper {
     constructor() {}
 
-    public mapTime(requestTime: any): Time {
-        const time = new Time();
+    public mapTime(requestTime: any, existingTime?: Time): Time {
+        const time = (existingTime) ? existingTime : new Time();
 
         time.customer = requestTime.customer;
         time.billable = requestTime.billable;

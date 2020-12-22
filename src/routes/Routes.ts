@@ -13,7 +13,11 @@ class Routes {
         // Default hello 
         app.route("/").get(this.controller.hello);
         
-        app.route("/time").post(this.controller.addTime);
+        app.route("/time")
+            .post(this.controller.addTime);
+
+        app.route("/time/:id")
+            .put(this.controller.updateTime);
 
     }
 }
