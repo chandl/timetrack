@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Between, In, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { connection } from "../connection/Connection";
-import { MergeError } from "../dto/MergeError";
 import { Time } from "../entity/Time";
 import { Mapper } from "../mapper/Mapper";
 
