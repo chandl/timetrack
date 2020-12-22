@@ -1,0 +1,31 @@
+Liaison time tracking simplifier 
+
+* enter time every day (minutes)
+* Liaison is never billable
+
+Pages:
+* Track Time 
+    * customer, project type (Service Item), notes, billable?, time, start/end times (optional)
+    * view daily/weekly/monthly reports of original time tracking
+* Create/EditReports
+    0) Select date range to compile 
+    1) Automatically Organize by customer 
+    2) Let user Combine similar entries, merge notes and time
+    3) Round all times to nearest 15 minutes. If round down to 0, ask if it should be rounded up
+    4) Split all the entries into N days (N = number of business days in pay period) - so that each day is ~ 8 hrs 
+    5) Create intuit IIF file with these entries to be imported into QuickBooks Pro or Time Tracker 
+* View Reports
+    * webpage report with option to download quickbooks pro timer file 
+    * view history of created reports 
+
+
+Requirements:
+* Original time tracking should be preserved 
+* Should be able to start/stop editing reports on the fly 
+* Existing reports should be saved for future use 
+
+Need: 
+* Example time tracking file 
+
+Maybe:
+* Auto-import spreadsheet into system?

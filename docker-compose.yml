@@ -1,0 +1,23 @@
+---
+version: "2.1"
+services:
+  mariadb:
+    image: ghcr.io/linuxserver/mariadb
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=password
+      - TZ=America/Los_angeles
+      - MYSQL_DATABASE=timetrack #optional
+      - MYSQL_USER=user #optional
+      - MYSQL_PASSWORD=password #optional
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
