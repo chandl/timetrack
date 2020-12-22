@@ -19,6 +19,10 @@ class Routes {
       .get(this.controller.getTimeById)
       .put(this.controller.updateTime)
       .delete(this.controller.deleteTime);
+
+    app
+      .route("/time/merge")
+      .post(this.controller.mergeTime);
   }
 }
 export { Routes };

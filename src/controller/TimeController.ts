@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { Between, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import { Between, In, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { connection } from "../connection/Connection";
+import { MergeError } from "../dto/MergeError";
 import { Time } from "../entity/Time";
 import { Mapper } from "../mapper/Mapper";
 
@@ -113,5 +114,98 @@ class TimeController {
         res.status(500).json(err);
       });
   }
+
+  public mergeTime(req: Request, res: Response) {
+    // request body:
+    //   {
+    //       "toMerge": [id1, id2, id3, etc...]
+    //   }
+
+    // times must have * same customer, same serviceItem, same billable
+
+    const mergeList: number[] = req.body.toMerge;
+
+    if (!mergeList || mergeList.length == 0) {
+        res.status(400).json({
+            "error": "non-empty toMerge list required in request body"
+        });
+        return;
+    }
+
+    const mergeSet = new Set(mergeList);
+    console.log("Merging times", mergeSet);
+
+    const mergedTime = new Time();
+
+    connection.then(async conn => {
+        await conn.manager.find(Time, {
+            id: In(Array.from(mergeSet))
+        }).then(times => {
+            if(times.length != mergeSet.size) {
+                console.error("Could not find all expected merge entries", mergeSet, " - found", times.map(time => time.id));
+                res.status(400).json("Could not find all requested entries");
+                return;
+            }
+            return times;
+        })
+        .then(times => validateMergeTimes(times))
+        .then(times => mergeTimes(times))
+        .then(time => {
+            console.log("Successfully merged times", time)
+            res.json(time)
+        })
+        //todo merge
+        .catch(err => res.status(400).json(err))
+        
+
+    }).catch(err => {
+        console.error("Error merging", err);
+        res.status(500).json(err);
+    })
+
+  }
 }
 export { TimeController };
+
+
+const validateMergeTimes = (timesToMerge: Time[]): Promise<Time[]> => {
+    console.log("validating")
+  const expectedCustomer = timesToMerge[0].customer;
+  const expectedServiceItem = timesToMerge[0].serviceItem;
+  const expectedBillable = timesToMerge[0].billable;
+
+  const validMergeTimes = timesToMerge.filter(time => time.customer === expectedCustomer 
+      && time.serviceItem === expectedServiceItem 
+      && time.billable === expectedBillable);
+
+  console.log('hello')
+
+  if (validMergeTimes.length != timesToMerge.length) {
+      console.log("Could not merge entries: customer, serviceItem, and billable must be the same");
+      return Promise.reject({
+          "message": "Could not merge entries: customer, serviceItem, and billable must be the same",
+          "invalid": timesToMerge.filter(time => !validMergeTimes.includes(time)),
+          "expected": {
+              "customer": expectedCustomer,
+              "serviceItem": expectedServiceItem,
+              "billable": expectedBillable
+          }
+      });
+  }
+  return Promise.resolve(timesToMerge);
+}
+
+const mergeTimes = (times: Time[]) : Promise<Time> => {
+    // Make a clone of the first time
+    const mergedTime = mapper.mapTime(times[0]);
+    mergedTime.notes += ` (${mergedTime.minutes} min)`;
+
+    let curr: Time;
+    for (let i = 1; i<times.length; i++) {
+        curr = times[i];
+        mergedTime.minutes += curr.minutes;
+        mergedTime.notes += `\n${curr.notes} (${curr.minutes} min)`;
+    }
+
+    return Promise.resolve(mergedTime);
+};
