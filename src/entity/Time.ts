@@ -36,6 +36,6 @@ export class Time {
   @Column({ nullable: true })
   endTime: Date;
 
-  @ManyToOne(() => Report, (report) => report.times)
+  @ManyToOne(() => Report, (report) => report.times, { onDelete: "SET NULL" })
   associatedReport: Report;
 }
