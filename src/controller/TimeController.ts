@@ -24,9 +24,7 @@ class TimeController {
       });
   }
 
-  // todo merge times endpoint
-
-  public getAllTimes(req: Request, res: Response) {
+  public getTimes(req: Request, res: Response) {
     // Possible Query Parameters for Filtering
     // Sorting can be done on the frontend
     const startDate = req.query.startDate;

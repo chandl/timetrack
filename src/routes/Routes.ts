@@ -14,7 +14,7 @@ class Routes {
   public routes(app: Application): void {
     app
       .route("/time")
-      .get(this.timeController.getAllTimes)
+      .get(this.timeController.getTimes)
       .post(this.timeController.addTime);
 
     app
@@ -26,6 +26,16 @@ class Routes {
     app
       .route("/time/merge")
       .post(this.timeController.mergeTime);
+
+
+    app.route("/report")
+        .post(this.reportController.newReport)
+        .get(this.reportController.getReports);
+
+    app.route("/report/:id")
+        .get(this.reportController.getReportById)
+        .put(this.reportController.updateReport)
+        .delete(this.reportController.deleteReport);
   }
 }
 export { Routes };

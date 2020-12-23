@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Report } from "./Report";
 
 @Entity()
 export class Time {
@@ -28,4 +29,7 @@ export class Time {
 
   @Column({ nullable: true })
   endTime: Date;
+  
+  @ManyToOne(() => Report, report => report.times)
+  associatedReport: Report;
 }

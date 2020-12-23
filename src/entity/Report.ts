@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Time } from "./Time";
 
 @Entity()
 export class Report {
@@ -13,4 +14,7 @@ export class Report {
 
     @Column({ nullable: true })
     generatedFile: string;
+
+    @OneToMany(() => Time, time => time.associatedReport)
+    times: Time[];
 }

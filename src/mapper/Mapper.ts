@@ -1,3 +1,4 @@
+import { Report } from "../entity/Report";
 import { Time } from "../entity/Time";
 
 class Mapper {
@@ -16,6 +17,15 @@ class Mapper {
     time.serviceItem = requestTime.serviceItem;
 
     return time;
+  }
+
+  public mapReport(requestReport: any, existingreport?: Report): Report {
+    const report = existingreport ? existingreport : new Report();
+    report.startDate = requestReport.startDate;
+    report.endDate = requestReport.endDate;
+    report.generatedFile = requestReport.generatedFile;
+
+    return report;
   }
 }
 
