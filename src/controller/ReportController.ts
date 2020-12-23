@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
-import { Between } from "typeorm";
+import { Between, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { connection } from "../connection/Connection";
-import { ReportOverviewResponse } from "../dto/ReportOverviewResponse";
 import { ReportRequest } from "../dto/ReportRequest";
 import { ReportResponse } from "../dto/ReportResponse";
 import { Report } from "../entity/Report";
 import { Time } from "../entity/Time";
 import { Mapper } from "../mapper/Mapper";
+
+// TODO CREATE ReportService and TimeService to hold methods to connect to db
 
 const mapper = new Mapper();
 class ReportController {
@@ -22,7 +23,25 @@ class ReportController {
 
     connection
       .then(async (conn) => {
-        // TODO CHECK FOR REPORT OVERLAPS
+        // CHECK FOR REPORT OVERLAPS
+        // (StartA <= EndB) and (EndA >= StartB)
+        const reportFilter: { [key: string]: any } = {};
+        reportFilter.endDate = MoreThanOrEqual(request.startDate);
+        reportFilter.startDate = LessThanOrEqual(request.endDate);
+        const overlappingReports = await conn.manager.find(
+          Report,
+          reportFilter
+        );
+
+        if (overlappingReports.length > 0) {
+          res
+            .status(409)
+            .json({
+              message: "overlapping reports found. choose another time range",
+              overlappingReports,
+            });
+          return;
+        }
 
         // Find times
         const timesFromDb: Time[] = await conn.manager.find(Time, filter);
