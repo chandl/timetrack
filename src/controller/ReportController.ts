@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Between } from "typeorm";
 import { connection } from "../connection/Connection";
 import { ReportRequest } from "../dto/ReportRequest";
+import { ReportResponse } from "../dto/ReportResponse";
 import { Report } from "../entity/Report";
 import { Time } from "../entity/Time";
 import { Mapper } from "../mapper/Mapper";
@@ -43,11 +44,12 @@ class ReportController {
           await conn.manager.save(time);
         });
 
-        // TODO prevent each time object from showing reference to report
-        res.status(200).json({
-          report: report,
-          times: sortTimesByCustomer(timesFromDb),
-        });
+        res.status(200).json(
+          new ReportResponse({
+            report: report,
+            times: sortTimesByCustomer(timesFromDb),
+          })
+        );
       })
       .catch((err) => {
         console.error("Error creating new report", err);
@@ -71,12 +73,12 @@ class ReportController {
           associatedReport: existingReport,
         });
 
-        const response = {
-          report: existingReport,
-          times: sortTimesByCustomer(times),
-        };
-
-        res.status(200).json(response);
+        res.status(200).json(
+          new ReportResponse({
+            report: existingReport,
+            times: sortTimesByCustomer(times),
+          })
+        );
       })
       .catch((err) => {
         console.error("Error getting report by ID", err);
@@ -113,7 +115,8 @@ const sortTimesByCustomer = (times: Time[]): Map<string, any> => {
     // clone to prevent report from being overwritten
     const time = Object.assign({}, t);
     delete time.associatedReport;
-    customers[time.customer.toLowerCase()] = customers[time.customer.toLowerCase()] || [];
+    customers[time.customer.toLowerCase()] =
+      customers[time.customer.toLowerCase()] || [];
     customers[time.customer.toLowerCase()].push(time);
   });
 
