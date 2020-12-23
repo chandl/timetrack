@@ -45,12 +45,9 @@ class ReportController {
           await conn.manager.save(time);
         });
 
-        res.status(200).json(
-          new ReportResponse(
-            report,
-            sortTimesByCustomer(timesFromDb),
-          )
-        );
+        res
+          .status(200)
+          .json(new ReportResponse(report, sortTimesByCustomer(timesFromDb)));
       })
       .catch((err) => {
         console.error("Error creating new report", err);
@@ -74,12 +71,9 @@ class ReportController {
           associatedReport: existingReport,
         });
 
-        res.status(200).json(
-          new ReportResponse(
-            existingReport,
-            sortTimesByCustomer(times),
-          )
-        );
+        res
+          .status(200)
+          .json(new ReportResponse(existingReport, sortTimesByCustomer(times)));
       })
       .catch((err) => {
         console.error("Error getting report by ID", err);
@@ -88,36 +82,38 @@ class ReportController {
   }
 
   public getReports(req: Request, res: Response) {
-      // TODO filter strings
-      connection.then(async (conn) => {
+    // TODO filter strings
+    connection
+      .then(async (conn) => {
         const reports = await conn.manager.find(Report);
         res.status(200).json(reports);
-
-      }).catch((err) => {
-          console.error("Error getting reports", err);
-          res.status(500).json(err);
+      })
+      .catch((err) => {
+        console.error("Error getting reports", err);
+        res.status(500).json(err);
       });
   }
 
   public deleteReport(req: Request, res: Response) {
-      console.log("Deleting report with id", req.params.id);
-      connection.then(async (conn) => {
-          conn.manager.delete(Report, req.params.id).then(deleteResult => {
-              if(deleteResult.affected > 0) {
-                  res.status(200).send();
-              } else {
-                  res.status(404).send();
-              }
-          });
-
-      }).catch((err) => {
-          console.log("Error deleting report", err);
-          res.status(500).json(err);
+    console.log("Deleting report with id", req.params.id);
+    connection
+      .then(async (conn) => {
+        conn.manager.delete(Report, req.params.id).then((deleteResult) => {
+          if (deleteResult.affected > 0) {
+            res.status(200).send();
+          } else {
+            res.status(404).send();
+          }
+        });
       })
+      .catch((err) => {
+        console.log("Error deleting report", err);
+        res.status(500).json(err);
+      });
   }
 
   public updateReport(req: Request, res: Response) {
-      res.status(501).json({"message": "update not implemented"});
+    res.status(501).json({ message: "update not implemented" });
   }
 }
 
@@ -152,5 +148,5 @@ const sortTimesByCustomer = (times: Time[]): Map<string, any> => {
 };
 
 const calculateTotalTime = (times: Time[]): number => {
-    return times.map(time => time.minutes).reduce((a, b) => a + b);
-}
+  return times.map((time) => time.minutes).reduce((a, b) => a + b);
+};
