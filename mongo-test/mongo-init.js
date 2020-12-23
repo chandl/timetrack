@@ -1,12 +1,10 @@
-db.createUser(
+db.createUser({
+  user: "timetrack",
+  pwd: "timetrack",
+  roles: [
     {
-        user: "timetrack",
-        pwd: "timetrack",
-        roles: [
-            {
-                role: "readWrite",
-                db: "timetrack"
-            }
-        ]
-    }
-);
+      role: "readWrite",
+      db: "timetrack",
+    },
+  ],
+});

@@ -23,19 +23,18 @@ class Routes {
       .put(this.timeController.updateTime)
       .delete(this.timeController.deleteTime);
 
+    app.route("/time/merge").post(this.timeController.mergeTime);
+
     app
-      .route("/time/merge")
-      .post(this.timeController.mergeTime);
+      .route("/report")
+      .post(this.reportController.newReport)
+      .get(this.reportController.getReports);
 
-
-    app.route("/report")
-        .post(this.reportController.newReport)
-        .get(this.reportController.getReports);
-
-    app.route("/report/:id")
-        .get(this.reportController.getReportById)
-        .put(this.reportController.updateReport)
-        .delete(this.reportController.deleteReport);
+    app
+      .route("/report/:id")
+      .get(this.reportController.getReportById)
+      .put(this.reportController.updateReport)
+      .delete(this.reportController.deleteReport);
   }
 }
 export { Routes };

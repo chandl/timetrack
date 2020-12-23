@@ -3,18 +3,18 @@ import { Time } from "./Time";
 
 @Entity()
 export class Report {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    startDate: Date;
+  @Column()
+  startDate: Date;
 
-    @Column()
-    endDate: Date;
+  @Column()
+  endDate: Date;
 
-    @Column({ nullable: true })
-    generatedFile: string;
+  @Column({ nullable: true })
+  generatedFile: string;
 
-    @OneToMany(() => Time, time => time.associatedReport)
-    times: Time[];
+  @OneToMany(() => Time, (time) => time.associatedReport)
+  times: Time[];
 }
