@@ -10,6 +10,8 @@ import {
   FormControlLabel,
   Switch
 } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
+
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
@@ -33,7 +35,8 @@ const styles = theme => ({
   },
 });
 
-const TimeEditor = ({ classes, post, onSave, history }) => (
+
+const TimeEditor = ({ classes, post, customers, serviceItems, onSave, history }) => (
   <Form initialValues={post} onSubmit={onSave}>
     {({ handleSubmit }) => (
       <Modal
@@ -44,14 +47,38 @@ const TimeEditor = ({ classes, post, onSave, history }) => (
         <Card className={classes.modalCard}>
           <form onSubmit={handleSubmit}>
             <CardContent className={classes.modalCardContent}>
-              <Field name="customer">
-                {({ input }) => <TextField label="Customer" autoFocus {...input} />}
-              </Field>
+              <Autocomplete
+                    // value={input.value}
+                    renderOption={(option) => `${option}`}
+                    id="customer"
+                    freeSolo
+                    options={customers}
+                    renderInput={(params) =>(
+                        <TextField label="Customer" autoFocus {...params}/>
+                    )} />
+
+
+
+              {/* <Field name="customer">
+                {({ input }) => <TextField label="Customer" {...input} />}
+              </Field>  */}
               <Field name="serviceItem">
-                {({ input }) => <TextField label="Service Item" autoFocus {...input} />}
+                {({input}) => <Autocomplete 
+                  id="serviceItem"
+                  freeSolo
+                  options={serviceItems}
+                  renderInput={(params) => (
+                    <TextField label="serviceItem" {...params} />
+                  )}
+                  {...input}
+                />}
               </Field>
-              <Field name="minutes">
-                {({ input }) => <TextField label="Minutes" type="number" autoFocus {...input} />}
+              
+              {/* <Field name="serviceItem">
+                {({ input }) => <TextField label="Service Item" {...input} />}
+              </Field> */}
+              <Field name="minutes" defaultValue={0}>
+                {({ input }) => <TextField label="Minutes" type="number" {...input} />}
               </Field>
               <Field name="notes">
                 {({ input }) => (
@@ -64,7 +91,7 @@ const TimeEditor = ({ classes, post, onSave, history }) => (
                   />
                 )}
               </Field>
-              <Field name="day">
+              <Field name="day" defaultValue={new Date().toISOString().split("T")[0]}>
                 {({input}) => (
                   <TextField
                     id="day"
@@ -78,7 +105,7 @@ const TimeEditor = ({ classes, post, onSave, history }) => (
                   />
                 )}
               </Field>
-              <Field name="billable" type="checkbox">
+              <Field name="billable" type="checkbox" defaultValue={true}>
                 {({ input }) => <FormControlLabel control={<Switch
                     checked={input.value}
                     name="billable"

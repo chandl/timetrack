@@ -6,17 +6,18 @@ import {
   Fab,
   IconButton,
   Paper,
+  Button
 } from '@material-ui/core';
 import { DataGrid } from '@material-ui/data-grid';
 
-
 import { Delete as DeleteIcon, Add as AddIcon, Edit as EditIcon } from '@material-ui/icons';
-import moment from 'moment';
-import { find, orderBy } from 'lodash';
+import { find } from 'lodash';
 import { compose } from 'recompose';
 
 import TimeEditor from '../components/TimeEditor';
 import ErrorSnackbar from '../components/ErrorSnackbar';
+
+const FORMAT_MINUTES = (n) => n >= 60? `0${n / 60 ^ 0}`.slice(-2) + 'h ' + ('0' + n % 60).slice(-2) + "m" : ('0' + n % 60).slice(-2) + "m";
 
 const TIME_COL_SORT = [
   {
@@ -48,13 +49,22 @@ class TimeManager extends Component {
     // { field: "id", headerName: "ID", width: 60 },
     { field: "day", headerName: "Date", width: 110},
     { field: "customer", headerName: "Customer" },
-    { field: "serviceItem", headerName: "Service Item" },
-    { field: "minutes", headerName: "Time", type: "number"},
+    { field: "serviceItem", headerName: "SvcItem" },
+    { field: "minutes", headerName: "Time", valueFormatter: (params) => FORMAT_MINUTES(params.row.minutes)},
     { field: "notes", headerName: "Notes", width:250, sortable: false},
-    { field: "billable", headerName: "Billable"},
-    { field: "edit", headerName: "Actions", width:500, renderCell: (params) => (
+    { field: "billable", headerName: "Billable", renderCell: (params) => {
+      if(params.row.billable) {
+        return (<Button variant="contained" size="small" color="primary">
+                  Yes
+                </Button>)
+      } else {
+        return (<Button variant="contained" size="small" color="secondary">
+                  No
+                </Button>)
+      }
+    }},
+    { field: "edit", headerName: "Actions", width:100, renderCell: (params) => (
       <>
-      {/* <ListItem key={post.id} button component={Link} to={`/time/${post.id}`} */}
       <IconButton component={Link} to={`/time/${params.row.id}`} color="inherit">
         <EditIcon />
       </IconButton>
@@ -67,6 +77,8 @@ class TimeManager extends Component {
   state = {
     loading: true,
     posts: [],
+    customers: [],
+    serviceItems: [],
     error: null,
   };
 
@@ -85,7 +97,7 @@ class TimeManager extends Component {
         },
       });
       const text = await response.text();
-      if(text.length == 0) {
+      if(text.length === 0) {
         return null;
       }
       return JSON.parse(text);
@@ -96,7 +108,11 @@ class TimeManager extends Component {
   }
 
   async getPosts() {
-    this.setState({ loading: false, posts: (await this.fetch('get', '/time')) || [] });
+    const time = await this.fetch('get', '/time') || [];
+    const customers = [...new Set(time.map(t=>t.customer))];
+    const serviceItems = [...new Set(time.map(t=>t.serviceItem))];
+
+    this.setState({ loading: false, posts: time, customers: customers, serviceItems: serviceItems });
   }
 
   savePost = async (post) => {
@@ -122,8 +138,7 @@ class TimeManager extends Component {
     const post = find(this.state.posts, { id: Number(id) });
 
     if (!post && id !== 'new') return <Redirect to="/time" />;
-
-    return <TimeEditor post={post} onSave={this.savePost} />;
+    return <TimeEditor post={post} customers={this.state.customers} serviceItems={this.state.serviceItems} onSave={this.savePost} />;
   };
 
   render() {
@@ -136,7 +151,7 @@ class TimeManager extends Component {
           <Paper elevation={1} className={classes.posts}>
             <div style={{ display: 'flex', height: '100%' }}>
               <div style={{ flexGrow: 1 }}>
-                <DataGrid autoHeight autoPageSize showToolbar density="compact" sortModel={TIME_COL_SORT} rows={this.state.posts} columns={this.timeColumns} checkboxSelection />
+                <DataGrid autoHeight rowsPerPageOptions={[10, 25, 50, 100]} pageSize={10} showToolbar density="compact" sortModel={TIME_COL_SORT} rows={this.state.posts} columns={this.timeColumns} checkboxSelection />
               </div>
             </div>
           </Paper>

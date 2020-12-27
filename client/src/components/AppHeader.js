@@ -17,7 +17,7 @@ const AppHeader = ({ classes }) => (
   <AppBar position="static">
     <Toolbar>
       <Typography variant="h6" color="inherit">
-        My React App
+        Time Tracker
       </Typography>
       <div className={classes.flex} />
       <Button color="inherit" component={Link} to="/">Home</Button>
