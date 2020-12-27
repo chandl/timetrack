@@ -19,6 +19,12 @@ import ErrorSnackbar from '../components/ErrorSnackbar';
 
 const FORMAT_MINUTES = (n) => n >= 60? `0${n / 60 ^ 0}`.slice(-2) + 'h ' + ('0' + n % 60).slice(-2) + "m" : ('0' + n % 60).slice(-2) + "m";
 
+const TIME_DEFAULTS = {
+  minutes: 0,
+  day: new Date().toISOString().split("T")[0],
+  billable: true
+}
+
 const TIME_COL_SORT = [
   {
     field: 'day',
@@ -116,6 +122,7 @@ class TimeManager extends Component {
   }
 
   savePost = async (post) => {
+    console.log("SAVING POST:::", post);
     if (post.id) {
       await this.fetch('put', `/time/${post.id}`, post);
     } else {
@@ -127,7 +134,7 @@ class TimeManager extends Component {
   }
 
   async deletePost(post) {
-    if (window.confirm(`Are you sure you want to delete post "${post.id}"`)) {
+    if (window.confirm(`Are you sure you want to delete time "${post.id}"`)) {
       await this.fetch('delete', `/time/${post.id}`);
       this.getPosts();
     }
@@ -135,9 +142,11 @@ class TimeManager extends Component {
 
   renderPostEditor = ({ match: { params: { id } } }) => {
     if (this.state.loading) return null;
-    const post = find(this.state.posts, { id: Number(id) });
+    let post = find(this.state.posts, { id: Number(id) });
 
     if (!post && id !== 'new') return <Redirect to="/time" />;
+
+    if (id === "new") post = Object.assign({}, TIME_DEFAULTS);
     return <TimeEditor post={post} customers={this.state.customers} serviceItems={this.state.serviceItems} onSave={this.savePost} />;
   };
 

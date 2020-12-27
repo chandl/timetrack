@@ -14,7 +14,9 @@ import { Autocomplete } from '@material-ui/lab';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
-import { Form, Field } from 'react-final-form';
+// import { Form, Field } from 'react-final-form';
+import { Formik, Form, Field } from "formik";
+
 
 const styles = theme => ({
   modal: {
@@ -35,95 +37,121 @@ const styles = theme => ({
   },
 });
 
+const AutocompleteAdapter = ({ input, ...rest }) => (
+  <Autocomplete
+    {...input}
+    {...rest}
+    forcePopupIcon={false}
+    freeSolo
+    renderInput={params => <TextField {...params} {...input} {...rest} />}
+  />
+);
 
-const TimeEditor = ({ classes, post, customers, serviceItems, onSave, history }) => (
-  <Form initialValues={post} onSubmit={onSave}>
-    {({ handleSubmit }) => (
-      <Modal
+const TimeEditor = ({ classes, post, customers, serviceItems, onSave, history }) => {
+  return (
+      <Formik
+        initialValues={{...post}}
+        onSubmit={data => onSave(data)}>
+        {({ setFieldValue, values, handleChange }) => (
+        <Modal
         className={classes.modal}
         onClose={() => history.goBack()}
         open
-      >
+        >    
         <Card className={classes.modalCard}>
-          <form onSubmit={handleSubmit}>
+          <Form>
+          
             <CardContent className={classes.modalCardContent}>
-              <Autocomplete
-                    // value={input.value}
-                    renderOption={(option) => `${option}`}
-                    id="customer"
-                    freeSolo
-                    options={customers}
-                    renderInput={(params) =>(
-                        <TextField label="Customer" autoFocus {...params}/>
-                    )} />
 
-
-
-              {/* <Field name="customer">
-                {({ input }) => <TextField label="Customer" {...input} />}
-              </Field>  */}
-              <Field name="serviceItem">
-                {({input}) => <Autocomplete 
-                  id="serviceItem"
+              <Autocomplete 
+                  id="customer"
+                  type="text"
+                  onChange={(e, value) => setFieldValue("customer", value)}
+                  defaultValue={values.customer}
                   freeSolo
+                  autoSelect
+                  options={customers}
+                  renderInput={(params) => (
+                    <TextField required autoFocus label="Customer" {...params} />
+                  )}
+                />
+
+            <Autocomplete 
+                  id="serviceItem"
+                  required
+                  type="text"
+                  onChange={(e, value) => setFieldValue("serviceItem", value)}
+                  defaultValue={values.serviceItem}
+                  freeSolo
+                  autoSelect
                   options={serviceItems}
                   renderInput={(params) => (
-                    <TextField label="serviceItem" {...params} />
+                    <TextField required label="Service Item" {...params} />
                   )}
-                  {...input}
-                />}
-              </Field>
+                />
+            <Field 
+              component={TextField}
+              required
+              id="minutes"
+              name="minutes"
+              label="Minutes"
+              type="number"
+              defaultValue={values.minutes}
+              onChange={handleChange}/>
               
-              {/* <Field name="serviceItem">
-                {({ input }) => <TextField label="Service Item" {...input} />}
-              </Field> */}
-              <Field name="minutes" defaultValue={0}>
-                {({ input }) => <TextField label="Minutes" type="number" {...input} />}
-              </Field>
-              <Field name="notes">
-                {({ input }) => (
-                  <TextField
-                    className={classes.marginTop}
-                    label="Notes"
-                    multiline
-                    rows={4}
-                    {...input}
-                  />
-                )}
-              </Field>
-              <Field name="day" defaultValue={new Date().toISOString().split("T")[0]}>
-                {({input}) => (
-                  <TextField
-                    id="day"
-                    label="Date"
-                    type="date"
-                    className={classes.textField}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    {...input}
-                  />
-                )}
-              </Field>
-              <Field name="billable" type="checkbox" defaultValue={true}>
-                {({ input }) => <FormControlLabel control={<Switch
-                    checked={input.value}
-                    name="billable"
-                    color="primary"
-                    />} 
-                  label="Billable" {...input}/>}
-              </Field>
+            <Field 
+              component={TextField}
+              required
+              id="notes"
+              name="notes"
+              label="Notes"
+              defaultValue={values.notes} 
+              multiline
+              rows={4}
+              onChange={handleChange}/>
+
+            <Field 
+              component={TextField}
+              required
+              id="day"
+              name="day" 
+              label="Day" 
+              type="date"
+              className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={handleChange}
+              defaultValue={values.day} />
+            <Field 
+              name="billable"
+              id="billable"
+              label="Billable"
+              type="checkbox"
+              // defaultValue={true}
+              onChange={handleChange}
+              control={<Switch
+                        checked={values.billable}
+                        name="billable"
+                        color="primary"
+                        />} 
+              component={FormControlLabel}/>
             </CardContent>
-            <CardActions>
-              <Button size="small" color="primary" type="submit">Save</Button>
-              <Button size="small" onClick={() => history.goBack()}>Cancel</Button>
-            </CardActions>
-          </form>
+
+              <CardActions>
+                <Button size="small" color="primary" type="submit">Save</Button>
+                <Button size="small" onClick={() => history.goBack()}>Cancel</Button>
+              </CardActions>
+            </Form>
         </Card>
-      </Modal>
-    )}
-  </Form>
-);
+        </Modal>)}
+      </Formik>
+
+
+      
+
+  );
+}
 
 export default compose(
   withRouter,
