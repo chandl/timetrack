@@ -6,18 +6,24 @@ import {
   Fab,
   IconButton,
   Paper,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
 } from '@material-ui/core';
-import { Delete as DeleteIcon, Add as AddIcon } from '@material-ui/icons';
+import { DataGrid } from '@material-ui/data-grid';
+
+
+import { Delete as DeleteIcon, Add as AddIcon, Edit as EditIcon } from '@material-ui/icons';
 import moment from 'moment';
 import { find, orderBy } from 'lodash';
 import { compose } from 'recompose';
 
 import TimeEditor from '../components/TimeEditor';
 import ErrorSnackbar from '../components/ErrorSnackbar';
+
+const TIME_COL_SORT = [
+  {
+    field: 'day',
+    sort: 'desc',
+  },
+];
 
 const styles = theme => ({
   posts: {
@@ -37,6 +43,27 @@ const styles = theme => ({
 const API = process.env.REACT_APP_API || 'http://localhost:3000';
 
 class TimeManager extends Component {
+
+  timeColumns = [
+    // { field: "id", headerName: "ID", width: 60 },
+    { field: "day", headerName: "Date", width: 110},
+    { field: "customer", headerName: "Customer" },
+    { field: "serviceItem", headerName: "Service Item" },
+    { field: "minutes", headerName: "Time", type: "number"},
+    { field: "notes", headerName: "Notes", width:250, sortable: false},
+    { field: "billable", headerName: "Billable"},
+    { field: "edit", headerName: "Actions", width:500, renderCell: (params) => (
+      <>
+      {/* <ListItem key={post.id} button component={Link} to={`/time/${post.id}`} */}
+      <IconButton component={Link} to={`/time/${params.row.id}`} color="inherit">
+        <EditIcon />
+      </IconButton>
+      <IconButton onClick={() => this.deletePost(params.row)} color="inherit">
+        <DeleteIcon />
+      </IconButton>
+      </>
+    )}
+  ]
   state = {
     loading: true,
     posts: [],
@@ -57,10 +84,13 @@ class TimeManager extends Component {
           accept: 'application/json'
         },
       });
-      return await response.json();
+      const text = await response.text();
+      if(text.length == 0) {
+        return null;
+      }
+      return JSON.parse(text);
     } catch (error) {
       console.error(error);
-
       this.setState({ error });
     }
   }
@@ -104,21 +134,11 @@ class TimeManager extends Component {
         <Typography variant="h4">Time Manager</Typography>
         {this.state.posts.length > 0 ? (
           <Paper elevation={1} className={classes.posts}>
-            <List>
-              {orderBy(this.state.posts, ['day', 'customer', 'serviceItem'], ['desc', 'asc']).map(post => (
-                <ListItem key={post.id} button component={Link} to={`/time/${post.id}`}>
-                  <ListItemText
-                    primary={`${post.customer} | ${post.notes}`}
-                    secondary={`${moment(post.day).fromNow()}`}
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton onClick={() => this.deletePost(post)} color="inherit">
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              ))}
-            </List>
+            <div style={{ display: 'flex', height: '100%' }}>
+              <div style={{ flexGrow: 1 }}>
+                <DataGrid autoHeight autoPageSize showToolbar density="compact" sortModel={TIME_COL_SORT} rows={this.state.posts} columns={this.timeColumns} checkboxSelection />
+              </div>
+            </div>
           </Paper>
         ) : (
           !this.state.loading && <Typography variant="subtitle1">No time to display</Typography>

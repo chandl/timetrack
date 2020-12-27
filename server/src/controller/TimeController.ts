@@ -16,7 +16,7 @@ class TimeController {
           res.status(404).send();
           return;
         }
-        res.status(200).json(existingTime);
+        res.status(200).json(mapper.mapToDto(existingTime));
       })
       .catch((err) => {
         console.error("Error getting time by id", err);
@@ -63,7 +63,7 @@ class TimeController {
       .then(async (conn) => {
         console.log("Adding time:", time);
         conn.manager.save(time).then((entity) => {
-          res.status(200).json(entity);
+          res.status(200).json(mapper.mapToDto(entity));
         });
       })
       .catch((err) => {
@@ -85,7 +85,7 @@ class TimeController {
 
         conn.manager.save(updatedTime).then((entity) => {
           console.log("Time updated successfully; updated", entity);
-          res.status(200).json(entity);
+          res.status(200).json(mapper.mapToDto(entity));
         });
       })
       .catch((err) => {
@@ -157,7 +157,7 @@ class TimeController {
           .then((times) => mergeTimes(times))
           .then((time) => {
             console.log("Successfully merged times", time);
-            res.json(time);
+            res.json(mapper.mapToDto(time));
           })
           //todo merge
           .catch((err) => res.status(400).json(err));

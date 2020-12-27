@@ -5,12 +5,12 @@ import { Time } from "../entity/Time";
 class Mapper {
   constructor() {}
 
-  public mapTime(requestTime: any, existingTime?: Time): Time {
+  public mapTime(requestTime: TimeDto, existingTime?: Time): Time {
     const time = existingTime ? existingTime : new Time();
 
     time.customer = requestTime.customer;
     time.billable = requestTime.billable;
-    time.day = requestTime.day;
+    time.day = new Date(requestTime.day);
     time.minutes = requestTime.minutes;
     time.notes = requestTime.notes;
     time.startTime = requestTime.startTime;
