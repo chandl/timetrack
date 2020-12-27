@@ -1,3 +1,4 @@
+import { TimeDto } from "../dto/TimeDto";
 import { Report } from "../entity/Report";
 import { Time } from "../entity/Time";
 
@@ -26,6 +27,14 @@ class Mapper {
     report.generatedFile = requestReport.generatedFile;
 
     return report;
+  }
+
+  public mapToDto(dao: Time): TimeDto {
+    const mapped: TimeDto = Object.assign({}, dao, {
+      day: dao.day.toISOString().split('T')[0],
+      associatedReport: dao.associatedReport? dao.associatedReport.id : null
+    });
+    return mapped;
   }
 }
 
