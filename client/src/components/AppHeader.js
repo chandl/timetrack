@@ -22,6 +22,7 @@ const AppHeader = ({ classes }) => (
       <div className={classes.flex} />
       <Button color="inherit" component={Link} to="/">Home</Button>
       <Button color="inherit" component={Link} to="/time">Time Manager</Button>
+      <Button color="inherit" component={Link} to="/report">Report Manager</Button>
     </Toolbar>
   </AppBar>
 );

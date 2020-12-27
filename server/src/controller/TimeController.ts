@@ -205,7 +205,7 @@ const validateMergeTimes = (timesToMerge: Time[]): Promise<Time[]> => {
 
 const mergeTimes = (times: Time[]): Promise<Time> => {
   // Make a clone of the first time
-  const mergedTime = mapper.mapTime(times[0]);
+  const mergedTime: Time = mapper.mapTime(times[0]);
   mergedTime.notes += ` (${mergedTime.minutes} min)`;
 
   let curr: Time;

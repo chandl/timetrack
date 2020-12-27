@@ -1,6 +1,25 @@
 import { Request, Response, Application } from "express";
 import { ReportController } from "../controller/ReportController";
 import { TimeController } from "../controller/TimeController";
+import * as Joi from 'joi'
+import {
+  ValidatedRequest,
+  createValidator
+} from 'express-joi-validation'
+
+const validator = createValidator({
+  passError: true
+});
+const timeSchema = Joi.object({
+  day: Joi.date().required(),
+  customer: Joi.string().required(),
+  serviceItem: Joi.string().required(),
+  notes: Joi.string().required(),
+  billable: Joi.bool().required(),
+  minutes: Joi.number().required(),
+  startTime: Joi.date().optional(),
+  endTime: Joi.date().optional()
+})
 
 class Routes {
   private timeController: TimeController;
@@ -15,12 +34,12 @@ class Routes {
     app
       .route("/time")
       .get(this.timeController.getTimes)
-      .post(this.timeController.addTime);
+      .post(validator.body(timeSchema), (req: ValidatedRequest<any>, res) => this.timeController.addTime(req, res));
 
     app
       .route("/time/:id")
       .get(this.timeController.getTimeById)
-      .put(this.timeController.updateTime)
+      .put(validator.body(timeSchema), (req: ValidatedRequest<any>, res) => this.timeController.updateTime(req, res))
       .delete(this.timeController.deleteTime);
 
     app.route("/time/merge").post(this.timeController.mergeTime);
