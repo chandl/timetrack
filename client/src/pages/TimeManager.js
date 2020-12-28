@@ -55,8 +55,6 @@ const styles = (theme) => ({
   },
 });
 
-const API = process.env.REACT_APP_API || "http://localhost:3000";
-
 class TimeManager extends Component {
   timeColumns = [
     { field: "day", headerName: "Date", width: 110 },
@@ -149,7 +147,7 @@ class TimeManager extends Component {
       // Remove unneeded info from post
       delete post.id;
       delete post.associatedReport;
-     [res, err] = await Fetch("put", `/time/${id}asdfasdfasdf`, post);
+     [res, err] = await Fetch("put", `/time/${id}`, post);
     } else {
      [res, err] = await Fetch("post", "/time", post);
     }

@@ -5,6 +5,7 @@ import { Route, BrowserRouter as Router } from "react-router-dom";
 import AppHeader from "./components/AppHeader";
 import Home from "./pages/Home";
 import TimeManager from "./pages/TimeManager";
+import ReportManager from "./pages/ReportManager";
 
 const styles = (theme) => ({
   main: {
@@ -23,6 +24,7 @@ const App = ({ classes }) => (
       <main className={classes.main}>
         <Route exact path="/" component={Home}></Route>
         <Route path="/time" component={TimeManager}></Route>
+        <Route path="/report" component={ReportManager}></Route>
       </main>
     </Fragment>
   </Router>

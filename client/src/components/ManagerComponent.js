@@ -1,23 +1,6 @@
-import React, { Component, Fragment } from "react";
-
-
 const API = process.env.REACT_APP_API || "http://localhost:3000";
-const styles = (theme) => ({
-    posts: {
-      marginTop: theme.spacing(2),
-    },
-    fab: {
-      position: "absolute",
-      bottom: theme.spacing(3),
-      right: theme.spacing(3),
-      [theme.breakpoints.down("xs")]: {
-        bottom: theme.spacing(2),
-        right: theme.spacing(2),
-      },
-    },
-  });
 
-  // returns (response, error)
+// returns (response, error)
 const Fetch = async (method, endpoint, body) => {
     try {
         const response = await fetch(`${API}${endpoint}`, {
