@@ -36,12 +36,10 @@ class ReportController {
         );
 
         if (overlappingReports.length > 0) {
-          res
-            .status(409)
-            .json({
-              message: "overlapping reports found. choose another time range",
-              overlappingReports,
-            });
+          res.status(409).json({
+            message: "overlapping reports found. choose another time range",
+            overlappingReports,
+          });
           return;
         }
 
@@ -68,7 +66,12 @@ class ReportController {
 
         res
           .status(200)
-          .json(new ReportResponse(mapper.mapReportToDto(report), sortTimesByCustomer(timesFromDb)));
+          .json(
+            new ReportResponse(
+              mapper.mapReportToDto(report),
+              sortTimesByCustomer(timesFromDb)
+            )
+          );
       })
       .catch((err) => {
         console.error("Error creating new report", err);
@@ -94,7 +97,12 @@ class ReportController {
 
         res
           .status(200)
-          .json(new ReportResponse(mapper.mapReportToDto(existingReport), sortTimesByCustomer(times)));
+          .json(
+            new ReportResponse(
+              mapper.mapReportToDto(existingReport),
+              sortTimesByCustomer(times)
+            )
+          );
       })
       .catch((err) => {
         console.error("Error getting report by ID", err);
@@ -107,7 +115,7 @@ class ReportController {
     connection
       .then(async (conn) => {
         const reports = await conn.manager.find(Report);
-        res.status(200).json(reports.map(rep => mapper.mapReportToDto(rep)));
+        res.status(200).json(reports.map((rep) => mapper.mapReportToDto(rep)));
       })
       .catch((err) => {
         console.error("Error getting reports", err);

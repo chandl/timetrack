@@ -1,14 +1,11 @@
 import { Request, Response, Application } from "express";
 import { ReportController } from "../controller/ReportController";
 import { TimeController } from "../controller/TimeController";
-import * as Joi from 'joi'
-import {
-  ValidatedRequest,
-  createValidator
-} from 'express-joi-validation'
+import * as Joi from "joi";
+import { ValidatedRequest, createValidator } from "express-joi-validation";
 
 const validator = createValidator({
-  passError: true
+  passError: true,
 });
 const timeSchema = Joi.object({
   day: Joi.date().required(),
@@ -18,12 +15,12 @@ const timeSchema = Joi.object({
   billable: Joi.bool().required(),
   minutes: Joi.number().integer().required(),
   startTime: Joi.date().optional(),
-  endTime: Joi.date().optional()
-})
+  endTime: Joi.date().optional(),
+});
 
 const timeUpdateSchema = Joi.object({
-  id: Joi.number().integer().required()
-})
+  id: Joi.number().integer().required(),
+});
 
 class Routes {
   private timeController: TimeController;
@@ -38,12 +35,19 @@ class Routes {
     app
       .route("/time")
       .get(this.timeController.getTimes)
-      .post(validator.body(timeSchema), (req: ValidatedRequest<any>, res) => this.timeController.addTime(req, res));
+      .post(validator.body(timeSchema), (req: ValidatedRequest<any>, res) =>
+        this.timeController.addTime(req, res)
+      );
 
     app
       .route("/time/:id")
       .get(this.timeController.getTimeById)
-      .put(validator.params(timeUpdateSchema), validator.body(timeSchema), (req: ValidatedRequest<any>, res) => this.timeController.updateTime(req, res))
+      .put(
+        validator.params(timeUpdateSchema),
+        validator.body(timeSchema),
+        (req: ValidatedRequest<any>, res) =>
+          this.timeController.updateTime(req, res)
+      )
       .delete(this.timeController.deleteTime);
 
     app.route("/time/merge").post(this.timeController.mergeTime);

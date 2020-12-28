@@ -21,7 +21,7 @@ import { compose } from "recompose";
 
 import TimeEditor from "../components/TimeEditor";
 import ErrorSnackbar from "../components/ErrorSnackbar";
-import {Fetch} from "../components/ManagerComponent";
+import { Fetch } from "../components/ManagerComponent";
 
 const FORMAT_MINUTES = (n) =>
   n >= 60
@@ -72,14 +72,9 @@ class TimeManager extends Component {
       headerName: "Billable",
       renderCell: (params) => {
         if (params.row.billable) {
-          return (
-            <Chip label="Yes" size="small" color="primary" />
-          );
+          return <Chip label="Yes" size="small" color="primary" />;
         } else {
-          return (
-            <Chip label="No" size="small" color="secondary"/>
-             
-          );
+          return <Chip label="No" size="small" color="secondary" />;
         }
       },
     },
@@ -120,8 +115,8 @@ class TimeManager extends Component {
 
   async getPosts() {
     const [time, err] = await Fetch("get", "/time");
-    if(err) {
-      this.setState({error: err});
+    if (err) {
+      this.setState({ error: err });
       return;
     }
     const customers = [...new Set(time.map((t) => t.customer))];
@@ -145,13 +140,13 @@ class TimeManager extends Component {
       // Remove unneeded info from post
       delete post.id;
       delete post.associatedReport;
-     [res, err] = await Fetch("put", `/time/${id}`, post);
+      [res, err] = await Fetch("put", `/time/${id}`, post);
     } else {
-     [res, err] = await Fetch("post", "/time", post);
+      [res, err] = await Fetch("post", "/time", post);
     }
 
-    if(err) {
-      this.setState({error: err});
+    if (err) {
+      this.setState({ error: err });
     }
 
     this.props.history.goBack();
@@ -162,8 +157,8 @@ class TimeManager extends Component {
     if (window.confirm(`Are you sure you want to delete time "${post.id}"`)) {
       const [res, err] = await Fetch("delete", `/time/${post.id}`);
 
-      if(err) {
-        this.setState({error: err})
+      if (err) {
+        this.setState({ error: err });
         return;
       }
 

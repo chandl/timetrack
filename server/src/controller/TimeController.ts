@@ -49,7 +49,7 @@ class TimeController {
       .then(async (conn) => {
         const times: Time[] = await conn.manager.find(Time, filter);
 
-        res.json(times.map(time => mapper.mapToDto(time)));
+        res.json(times.map((time) => mapper.mapToDto(time)));
       })
       .catch((err) => {
         console.error("Error getting all times", err);

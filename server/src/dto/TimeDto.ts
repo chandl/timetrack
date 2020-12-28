@@ -9,4 +9,4 @@ export type TimeDto = {
   startTime: Date;
   endTime: Date;
   associatedReport: number;
-}
+};

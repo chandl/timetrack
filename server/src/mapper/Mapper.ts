@@ -33,27 +33,27 @@ class Mapper {
   public mapToDto(dao: Time): TimeDto {
     const mapped: TimeDto = Object.assign({}, dao, {
       day: getDayFromDate(dao.day),
-      associatedReport: dao.associatedReport? dao.associatedReport.id : null
+      associatedReport: dao.associatedReport ? dao.associatedReport.id : null,
     });
-    if(!dao.startTime) delete mapped.startTime;
-    if(!dao.endTime) delete mapped.endTime;
+    if (!dao.startTime) delete mapped.startTime;
+    if (!dao.endTime) delete mapped.endTime;
     return mapped;
   }
 
   public mapReportToDto(dao: Report): ReportDto {
     const mapped: ReportDto = Object.assign({}, dao, {
       startDate: getDayFromDate(new Date(dao.startDate)),
-      endDate: getDayFromDate(new Date(dao.endDate))
-    })
+      endDate: getDayFromDate(new Date(dao.endDate)),
+    });
 
-    if(!dao.generatedFile) delete mapped.generatedFile;
+    if (!dao.generatedFile) delete mapped.generatedFile;
 
     return mapped;
   }
 }
 
 const getDayFromDate = (date: Date): string => {
-  return date.toISOString().split('T')[0];
-}
+  return date.toISOString().split("T")[0];
+};
 
 export { Mapper };
