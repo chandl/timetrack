@@ -66,7 +66,7 @@ class ReportController {
 
         res
           .status(200)
-          .json(new ReportResponse(report, sortTimesByCustomer(timesFromDb)));
+          .json(new ReportResponse(mapper.mapReportToDto(report), sortTimesByCustomer(timesFromDb)));
       })
       .catch((err) => {
         console.error("Error creating new report", err);
@@ -92,7 +92,7 @@ class ReportController {
 
         res
           .status(200)
-          .json(new ReportResponse(existingReport, sortTimesByCustomer(times)));
+          .json(new ReportResponse(mapper.mapReportToDto(existingReport), sortTimesByCustomer(times)));
       })
       .catch((err) => {
         console.error("Error getting report by ID", err);
@@ -105,7 +105,7 @@ class ReportController {
     connection
       .then(async (conn) => {
         const reports = await conn.manager.find(Report);
-        res.status(200).json(reports);
+        res.status(200).json(reports.map(rep => mapper.mapReportToDto(rep)));
       })
       .catch((err) => {
         console.error("Error getting reports", err);
