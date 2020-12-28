@@ -42,8 +42,8 @@ class Mapper {
 
   public mapReportToDto(dao: Report): ReportDto {
     const mapped: ReportDto = Object.assign({}, dao, {
-      startDate: getDayFromDate(dao.startDate),
-      endDate: getDayFromDate(dao.endDate)
+      startDate: getDayFromDate(new Date(dao.startDate)),
+      endDate: getDayFromDate(new Date(dao.endDate))
     })
 
     if(!dao.generatedFile) delete mapped.generatedFile;

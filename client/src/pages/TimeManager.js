@@ -7,6 +7,7 @@ import {
   IconButton,
   Paper,
   Button,
+  Chip,
 } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
 
@@ -72,15 +73,12 @@ class TimeManager extends Component {
       renderCell: (params) => {
         if (params.row.billable) {
           return (
-            <Button variant="contained" size="small" color="primary">
-              Yes
-            </Button>
+            <Chip label="Yes" size="small" color="primary" />
           );
         } else {
           return (
-            <Button variant="contained" size="small" color="secondary">
-              No
-            </Button>
+            <Chip label="No" size="small" color="secondary"/>
+             
           );
         }
       },

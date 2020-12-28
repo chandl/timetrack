@@ -15,6 +15,9 @@ export class Report {
   @Column({ nullable: true })
   generatedFile: string;
 
+  @Column()
+  status: string;
+
   @OneToMany(() => Time, (time) => time.associatedReport)
   times: Time[];
 }

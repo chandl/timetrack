@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import { withRouter, Link } from "react-router-dom";
 import { compose } from "recompose";
 import {
+    Chip,
     IconButton,
     Paper,
     Typography,
@@ -15,6 +16,7 @@ import {
 import { DataGrid } from "@material-ui/data-grid";
 
 import { Fetch } from "../components/ManagerComponent";
+import ErrorSnackbar from "../components/ErrorSnackbar";
 
 
 const styles = theme => ({
@@ -44,16 +46,23 @@ const REPORT_COL_SORT = [
 class ReportManager extends Component {
     reportColumns = [
         { field: "id", headerName: "Report #" , width: 100},
-        { field: "startDate", headerName: "Start Date", width: 150 },
-        { field: "endDate", headerName: "End Date", width: 150 },
-        { field: "totalMinutes", headerName: "Total Time" },
+        { field: "startDate", headerName: "Start Date", width: 125 },
+        { field: "endDate", headerName: "End Date", width: 120 },
+        { field: "status", headerName: "Status", width: 150, renderCell: (params) => {
+            switch(params.row.status) {
+                case "IN_PROGRESS":
+                    return (<Chip label="In Progress" size="small" color="secondary" />)
+                case "COMPLETED":
+                    return (<Chip label="Completed" size="small" color="primary" />);
+                default:
+                    return (<Chip label={params.row.status} size="small" />)
+            }
+        }},
         {
             field: "edit",
             headerName: "Actions",
             width: 200,
             renderCell: (params) => { 
-                let downloadColor = params.row.generatedFile ? "primary" : "secondary";
-
                 return (
               <>
                 <IconButton
@@ -64,16 +73,28 @@ class ReportManager extends Component {
                   <EditIcon />
                 </IconButton>
                 <IconButton
-                  onClick={() => this.deleteReport(params.row)}
+                  onClick={() => {
+                      if(params.row.status === "COMPLETED") {
+                          // terminal state! no deletes
+                          this.setState({error: {"message": "Cannot delete a completed report."}})
+                      } else {
+                        this.deleteReport(params.row);
+                      }
+                  }}
                   color="inherit"
                 >
                   <DeleteIcon />
                 </IconButton>
 
                 <IconButton 
-                    component={Link}
-                    to={"#"}
-                    color={downloadColor}
+                    onClick={() => {
+                        if(params.row.generatedFile) {
+                            window.location.href = params.row.generatedFile;
+                        } else {
+                            this.setState({error : { "message": "Report not available for download. You must complete the report first."}})
+                        }
+                    }}
+                    color={params.row.generatedFile ? "primary" : "secondary"}
                     >
                         <DownloadIcon />
                     </IconButton>
@@ -131,7 +152,7 @@ class ReportManager extends Component {
                 return;
             }
         
-            this.getPosts();
+            this.getReports();
         }
     }
 
@@ -161,6 +182,14 @@ class ReportManager extends Component {
                     <Typography variant="subtitle1">No reports to display</Typography>
                     )
                 )}
+
+
+            {this.state.error && (
+                    <ErrorSnackbar
+                        onClose={() => this.setState({ error: null })}
+                        message={this.state.error.message}
+                    />
+                    )}
             </Fragment>
         );
     }

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Between, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { connection } from "../connection/Connection";
+import { ReportStatus } from "../dto/ReportDto";
 import { ReportRequest } from "../dto/ReportRequest";
 import { ReportResponse } from "../dto/ReportResponse";
 import { Report } from "../entity/Report";
@@ -16,6 +17,7 @@ class ReportController {
   public newReport(req: Request, res: Response) {
     const request: ReportRequest = req.body;
     const report = mapper.mapReport(request);
+    report.status = ReportStatus.INITIALIZED;
 
     // create filter to find times between two dates
     const filter: { [key: string]: any } = {};
