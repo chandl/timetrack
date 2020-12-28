@@ -66,10 +66,29 @@ class TimeManager extends Component {
       headerName: "Time",
       valueFormatter: (params) => FORMAT_MINUTES(params.row.minutes),
     },
-    { field: "notes", headerName: "Notes", width: 250, sortable: false },
+    { field: "notes", headerName: "Notes", flex: 1, sortable: false },
+    {
+      field: "reported",
+      headerName: "Reported",
+      sortable: false,
+      renderCell: (params) => {
+        if (params.row.associatedReportId) {
+          return (
+            <Chip
+              label={`Yes (${params.row.associatedReportId})`}
+              size="small"
+              color="primary"
+            />
+          );
+        } else {
+          return <Chip label="No" size="small" color="secondary" />;
+        }
+      },
+    },
     {
       field: "billable",
       headerName: "Billable",
+      sortable: false,
       renderCell: (params) => {
         if (params.row.billable) {
           return <Chip label="Yes" size="small" color="primary" />;
@@ -81,7 +100,8 @@ class TimeManager extends Component {
     {
       field: "edit",
       headerName: "Actions",
-      width: 100,
+      sortable: false,
+      width: 150,
       renderCell: (params) => (
         <>
           <IconButton
@@ -206,7 +226,6 @@ class TimeManager extends Component {
                   sortModel={TIME_COL_SORT}
                   rows={this.state.posts}
                   columns={this.timeColumns}
-                  checkboxSelection
                 />
               </div>
             </div>

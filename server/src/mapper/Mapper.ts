@@ -33,7 +33,6 @@ class Mapper {
   public mapToDto(dao: Time): TimeDto {
     const mapped: TimeDto = Object.assign({}, dao, {
       day: getDayFromDate(dao.day),
-      associatedReport: dao.associatedReport ? dao.associatedReport.id : null,
     });
     if (!dao.startTime) delete mapped.startTime;
     if (!dao.endTime) delete mapped.endTime;

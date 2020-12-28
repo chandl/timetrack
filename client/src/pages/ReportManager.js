@@ -49,6 +49,7 @@ class ReportManager extends Component {
       field: "status",
       headerName: "Status",
       width: 150,
+      sortable: false,
       renderCell: (params) => {
         switch (params.row.status) {
           case "IN_PROGRESS":
@@ -63,6 +64,7 @@ class ReportManager extends Component {
     {
       field: "edit",
       headerName: "Actions",
+      sortable: false,
       width: 200,
       renderCell: (params) => {
         return (

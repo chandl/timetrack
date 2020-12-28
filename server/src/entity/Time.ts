@@ -32,4 +32,7 @@ export class Time {
 
   @ManyToOne(() => Report, (report) => report.times, { onDelete: "SET NULL" })
   associatedReport: Report;
+
+  @Column({ nullable: true })
+  associatedReportId: number;
 }

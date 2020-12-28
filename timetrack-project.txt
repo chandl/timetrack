@@ -29,3 +29,10 @@ Need:
 
 Maybe:
 * Auto-import spreadsheet into system?
+
+
+Stepper: 
+FOR EACH WEEK: 
+    - Edit and merge entries (BACKEND)
+    - Round all times to nearest 15 minutes and split between days (FRONTEND)
+    - Confirm and send requests to update server

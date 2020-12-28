@@ -48,7 +48,6 @@ class TimeController {
     connection
       .then(async (conn) => {
         const times: Time[] = await conn.manager.find(Time, filter);
-
         res.json(times.map((time) => mapper.mapToDto(time)));
       })
       .catch((err) => {

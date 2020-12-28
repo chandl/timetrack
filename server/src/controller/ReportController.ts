@@ -17,7 +17,7 @@ class ReportController {
   public newReport(req: Request, res: Response) {
     const request: ReportRequest = req.body;
     const report = mapper.mapReport(request);
-    report.status = ReportStatus.INITIALIZED;
+    report.status = ReportStatus.IN_PROGRESS;
 
     // create filter to find times between two dates
     const filter: { [key: string]: any } = {};

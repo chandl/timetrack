@@ -8,5 +8,5 @@ export type TimeDto = {
   minutes: number;
   startTime: Date;
   endTime: Date;
-  associatedReport: number;
+  associatedReportId: number;
 };
