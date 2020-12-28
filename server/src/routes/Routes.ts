@@ -16,9 +16,13 @@ const timeSchema = Joi.object({
   serviceItem: Joi.string().required(),
   notes: Joi.string().required(),
   billable: Joi.bool().required(),
-  minutes: Joi.number().required(),
+  minutes: Joi.number().integer().required(),
   startTime: Joi.date().optional(),
   endTime: Joi.date().optional()
+})
+
+const timeUpdateSchema = Joi.object({
+  id: Joi.number().integer().required()
 })
 
 class Routes {
@@ -39,7 +43,7 @@ class Routes {
     app
       .route("/time/:id")
       .get(this.timeController.getTimeById)
-      .put(validator.body(timeSchema), (req: ValidatedRequest<any>, res) => this.timeController.updateTime(req, res))
+      .put(validator.params(timeUpdateSchema), validator.body(timeSchema), (req: ValidatedRequest<any>, res) => this.timeController.updateTime(req, res))
       .delete(this.timeController.deleteTime);
 
     app.route("/time/merge").post(this.timeController.mergeTime);

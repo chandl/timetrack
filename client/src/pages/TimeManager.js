@@ -52,7 +52,6 @@ const API = process.env.REACT_APP_API || 'http://localhost:3000';
 class TimeManager extends Component {
 
   timeColumns = [
-    // { field: "id", headerName: "ID", width: 60 },
     { field: "day", headerName: "Date", width: 110},
     { field: "customer", headerName: "Customer" },
     { field: "serviceItem", headerName: "SvcItem" },
@@ -103,13 +102,16 @@ class TimeManager extends Component {
         },
       });
       const text = await response.text();
-      if(text.length === 0) {
+      if(text.length === 0 && response.ok) {
         return null;
+      }
+      if(!response.ok) {
+        throw new Error(`Failed to Save Post; Error=${text}; Status=${response.statusText}. Send this error to chandler so he can fix 😎`);
       }
       return JSON.parse(text);
     } catch (error) {
       console.error(error);
-      this.setState({ error });
+      this.setState({ error});
     }
   }
 
@@ -124,7 +126,12 @@ class TimeManager extends Component {
   savePost = async (post) => {
     console.log("SAVING POST:::", post);
     if (post.id) {
-      await this.fetch('put', `/time/${post.id}`, post);
+      const id = post.id;
+
+      // Remove unneeded info from post
+      delete post.id;
+      delete post.associatedReport;
+      await this.fetch('put', `/time/${id}`, post);
     } else {
       await this.fetch('post', '/time', post);
     }

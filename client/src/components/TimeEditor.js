@@ -37,16 +37,6 @@ const styles = theme => ({
   },
 });
 
-const AutocompleteAdapter = ({ input, ...rest }) => (
-  <Autocomplete
-    {...input}
-    {...rest}
-    forcePopupIcon={false}
-    freeSolo
-    renderInput={params => <TextField {...params} {...input} {...rest} />}
-  />
-);
-
 const TimeEditor = ({ classes, post, customers, serviceItems, onSave, history }) => {
   return (
       <Formik

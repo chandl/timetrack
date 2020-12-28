@@ -34,6 +34,8 @@ class Mapper {
       day: dao.day.toISOString().split('T')[0],
       associatedReport: dao.associatedReport? dao.associatedReport.id : null
     });
+    if(!dao.startTime) delete mapped.startTime;
+    if(!dao.endTime) delete mapped.endTime;
     return mapped;
   }
 }
