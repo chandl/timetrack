@@ -1,17 +1,17 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 import {
   AppBar,
   Button,
   Toolbar,
   Typography,
-  withStyles
-} from '@material-ui/core';
+  withStyles,
+} from "@material-ui/core";
 const styles = {
   flex: {
     flex: 1,
-  }
-}
+  },
+};
 
 const AppHeader = ({ classes }) => (
   <AppBar position="static">
@@ -20,9 +20,15 @@ const AppHeader = ({ classes }) => (
         Time Tracker
       </Typography>
       <div className={classes.flex} />
-      <Button color="inherit" component={Link} to="/">Home</Button>
-      <Button color="inherit" component={Link} to="/time">Time Manager</Button>
-      <Button color="inherit" component={Link} to="/report">Report Manager</Button>
+      <Button color="inherit" component={Link} to="/">
+        Home
+      </Button>
+      <Button color="inherit" component={Link} to="/time">
+        Time Manager
+      </Button>
+      <Button color="inherit" component={Link} to="/report">
+        Report Manager
+      </Button>
     </Toolbar>
   </AppBar>
 );

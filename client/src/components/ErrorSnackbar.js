@@ -1,21 +1,21 @@
-import React from 'react';
+import React from "react";
 import {
   withStyles,
   Snackbar,
   SnackbarContent,
   IconButton,
-} from '@material-ui/core';
-import { Error as ErrorIcon, Close as CloseIcon } from '@material-ui/icons';
-import { compose, withState } from 'recompose';
-import {v4 as uuid} from 'uuid';
+} from "@material-ui/core";
+import { Error as ErrorIcon, Close as CloseIcon } from "@material-ui/icons";
+import { compose, withState } from "recompose";
+import { v4 as uuid } from "uuid";
 
-const styles = theme => ({
+const styles = (theme) => ({
   snackbarContent: {
     backgroundColor: theme.palette.error.dark,
   },
   message: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
   },
   icon: {
     fontSize: 20,
@@ -27,11 +27,7 @@ const styles = theme => ({
 });
 
 const ErrorSnackbar = ({ id, message, onClose, classes }) => (
-  <Snackbar
-    open
-    autoHideDuration={6000}
-    onClose={onClose}
-  >
+  <Snackbar open autoHideDuration={6000} onClose={onClose}>
     <SnackbarContent
       className={`${classes.margin} ${classes.snackbarContent}`}
       aria-describedby={id}
@@ -42,15 +38,20 @@ const ErrorSnackbar = ({ id, message, onClose, classes }) => (
         </span>
       }
       action={[
-        <IconButton key="close" aria-label="Close" color="inherit" onClick={onClose}>
+        <IconButton
+          key="close"
+          aria-label="Close"
+          color="inherit"
+          onClick={onClose}
+        >
           <CloseIcon className={classes.icon} />
-        </IconButton>
+        </IconButton>,
       ]}
     />
   </Snackbar>
 );
 
 export default compose(
-  withState('id', 'setId', uuid),
-  withStyles(styles),
+  withState("id", "setId", uuid),
+  withStyles(styles)
 )(ErrorSnackbar);
