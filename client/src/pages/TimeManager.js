@@ -20,6 +20,7 @@ import { compose } from "recompose";
 
 import TimeEditor from "../components/TimeEditor";
 import ErrorSnackbar from "../components/ErrorSnackbar";
+import {Fetch} from "../components/ManagerComponent";
 
 const FORMAT_MINUTES = (n) =>
   n >= 60
@@ -121,34 +122,12 @@ class TimeManager extends Component {
     this.getPosts();
   }
 
-  async fetch(method, endpoint, body) {
-    try {
-      const response = await fetch(`${API}${endpoint}`, {
-        method,
-        body: body && JSON.stringify(body),
-        headers: {
-          "content-type": "application/json",
-          accept: "application/json",
-        },
-      });
-      const text = await response.text();
-      if (text.length === 0 && response.ok) {
-        return null;
-      }
-      if (!response.ok) {
-        throw new Error(
-          `Failed to Save Post; Error=${text}; Status=${response.statusText}. Send this error to chandler so he can fix 😎`
-        );
-      }
-      return JSON.parse(text);
-    } catch (error) {
-      console.error(error);
-      this.setState({ error });
-    }
-  }
-
   async getPosts() {
-    const time = (await this.fetch("get", "/time")) || [];
+    const [time, err] = await Fetch("get", "/time");
+    if(err) {
+      this.setState({error: err});
+      return;
+    }
     const customers = [...new Set(time.map((t) => t.customer))];
     const serviceItems = [...new Set(time.map((t) => t.serviceItem))];
 
@@ -162,15 +141,21 @@ class TimeManager extends Component {
 
   savePost = async (post) => {
     console.log("SAVING POST:::", post);
+
+    let err, res;
     if (post.id) {
       const id = post.id;
 
       // Remove unneeded info from post
       delete post.id;
       delete post.associatedReport;
-      await this.fetch("put", `/time/${id}`, post);
+     [res, err] = await Fetch("put", `/time/${id}asdfasdfasdf`, post);
     } else {
-      await this.fetch("post", "/time", post);
+     [res, err] = await Fetch("post", "/time", post);
+    }
+
+    if(err) {
+      this.setState({error: err});
     }
 
     this.props.history.goBack();
@@ -179,7 +164,13 @@ class TimeManager extends Component {
 
   async deletePost(post) {
     if (window.confirm(`Are you sure you want to delete time "${post.id}"`)) {
-      await this.fetch("delete", `/time/${post.id}`);
+      const [res, err] = await Fetch("delete", `/time/${post.id}`);
+
+      if(err) {
+        this.setState({error: err})
+        return;
+      }
+
       this.getPosts();
     }
   }
