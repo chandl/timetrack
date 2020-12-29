@@ -20,13 +20,8 @@ import { compose } from "recompose";
 
 import TimeEditor from "../components/TimeEditor";
 import ErrorSnackbar from "../components/ErrorSnackbar";
-import { Fetch } from "../components/ManagerComponent";
+import { Fetch, formatMinutes } from "../components/ManagerComponent";
 import ConfirmDialog from "../components/ConfirmDialog";
-
-const FORMAT_MINUTES = (n) =>
-  n >= 60
-    ? `0${(n / 60) ^ 0}`.slice(-2) + "h " + ("0" + (n % 60)).slice(-2) + "m"
-    : ("0" + (n % 60)).slice(-2) + "m";
 
 const TIME_DEFAULTS = {
   minutes: 0,
@@ -64,7 +59,7 @@ class TimeManager extends Component {
     {
       field: "minutes",
       headerName: "Time",
-      valueFormatter: (params) => FORMAT_MINUTES(params.row.minutes),
+      valueFormatter: (params) => formatMinutes(params.row.minutes),
     },
     {
       field: "notes",

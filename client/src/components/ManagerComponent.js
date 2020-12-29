@@ -27,4 +27,9 @@ const Fetch = async (method, endpoint, body) => {
   }
 };
 
-export { Fetch };
+const formatMinutes = (n) =>
+  n >= 60
+    ? `0${(n / 60) ^ 0}`.slice(-2) + "h " + ("0" + (n % 60)).slice(-2) + "m"
+    : ("0" + (n % 60)).slice(-2) + "m";
+
+export { Fetch, formatMinutes };
