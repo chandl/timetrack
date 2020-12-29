@@ -21,6 +21,7 @@ import { find } from "lodash";
 import { Fetch } from "../components/ManagerComponent";
 import ErrorSnackbar from "../components/ErrorSnackbar";
 import ReportCreator from "../components/ReportCreator";
+import ReportEditor from "../components/ReportEditor";
 
 const styles = (theme) => ({
   posts: {
@@ -141,23 +142,12 @@ class ReportManager extends Component {
   }
 
   saveReport = async (report) => {
-    if (report.id) {
+    // TODO report updates
+    /* if (report.id) {
       await Fetch("put", `/report/${report.id}`, report).catch((err) =>
         this.setState({ error: err })
       );
-    }
-
-    // let response;
-    // if (report.id) {
-    //   // response = await Fetch("put", `/report/${report.id}`, report);
-    // } else {
-    //   console.log("saveReport() called for new report")
-    //   //response = await Fetch("post", "/report", report);
-    // }
-
-    // if (response[1]) {
-    //   this.setState({ error: response[1] });
-    // }
+    } */
 
     this.props.history.goBack();
     this.getReports();
@@ -185,9 +175,12 @@ class ReportManager extends Component {
       return <ReportCreator report={report} onSave={this.saveReport} />;
     }
 
-    // let report = find(this.state.reports, { id: Number(id) });
-    // if (!report && id !== "new") return <Redirect to="/report" />;
-    // return <ReportEditor report={report} onSave={this.saveReport} />;
+    let report = find(this.state.reports, { id: Number(id) });
+    if (!report && id !== "new") return <Redirect to="/report" />;
+
+    return <ReportEditor report={report} onSave={this.saveReport} />;
+    // return this.getReport(report.id)
+    // .then(reportDetail =>);
   };
 
   render() {
