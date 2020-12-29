@@ -21,6 +21,7 @@ import { compose } from "recompose";
 import TimeEditor from "../components/TimeEditor";
 import ErrorSnackbar from "../components/ErrorSnackbar";
 import { Fetch } from "../components/ManagerComponent";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const FORMAT_MINUTES = (n) =>
   n >= 60
@@ -65,7 +66,13 @@ class TimeManager extends Component {
       headerName: "Time",
       valueFormatter: (params) => FORMAT_MINUTES(params.row.minutes),
     },
-    { field: "notes", headerName: "Notes", flex: 1, sortable: false },
+    {
+      field: "notes",
+      headerName: "Notes",
+      width: 400,
+      flex: 1,
+      sortable: false,
+    },
     // {
     //   field: "reported",
     //   headerName: "Reported",
@@ -111,7 +118,7 @@ class TimeManager extends Component {
             <EditIcon />
           </IconButton>
           <IconButton
-            onClick={() => this.deletePost(params.row)}
+            onClick={() => this.setState({ toDelete: params.row })}
             color="inherit"
           >
             <DeleteIcon />
@@ -126,6 +133,7 @@ class TimeManager extends Component {
     customers: [],
     serviceItems: [],
     error: null,
+    toDelete: null,
   };
 
   componentDidMount() {
@@ -151,18 +159,15 @@ class TimeManager extends Component {
   savePost = async (post) => {
     console.log("SAVING POST:::", post);
 
-    let response;
     if (post.id) {
       const id = post.id;
 
       // Remove unneeded info from post
       delete post.id;
       delete post.associatedReport;
-      response = await Fetch(
-        "put",
-        `/time/${id}sakldjflkajsdlf`,
-        post
-      ).catch((err) => this.setState({ error: err }));
+      await Fetch("put", `/time/${id}sakldjflkajsdlf`, post).catch((err) =>
+        this.setState({ error: err })
+      );
     } else {
       await Fetch("post", "/time", post).catch((err) =>
         this.setState({ error: err })
@@ -174,11 +179,9 @@ class TimeManager extends Component {
   };
 
   async deletePost(post) {
-    if (window.confirm(`Are you sure you want to delete time "${post.id}"`)) {
-      await Fetch("delete", `/time/${post.id}`)
-        .then(() => this.getPosts())
-        .catch((err) => this.setState({ error: err }));
-    }
+    await Fetch("delete", `/time/${post.id}`)
+      .then(() => this.getPosts())
+      .catch((err) => this.setState({ error: err }));
   }
 
   renderPostEditor = ({
@@ -244,6 +247,21 @@ class TimeManager extends Component {
           <ErrorSnackbar
             onClose={() => this.setState({ error: null })}
             message={this.state.error}
+          />
+        )}
+
+        {this.state.toDelete && (
+          <ConfirmDialog
+            title="Permanently Delete Time?"
+            message={`This will permanently delete this time (day: ${this.state.toDelete.day} | minutes: ${this.state.toDelete.minutes} | notes: '${this.state.toDelete.notes}'). Do you want to continue?`}
+            onAccept={() => {
+              this.deletePost(this.state.toDelete);
+              this.setState({ toDelete: null });
+            }}
+            onCancel={() => {
+              console.log("Cancelled deletion");
+              this.setState({ toDelete: null });
+            }}
           />
         )}
       </Fragment>

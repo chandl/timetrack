@@ -24,9 +24,7 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
 
   useEffect(() => {
     getReport(report.id).then((res) => setActiveReport(res));
-  }, []);
-
-  console.log("REPORT EDITOR: ", report);
+  }, [report.id]);
 
   const STEPS = [
     {

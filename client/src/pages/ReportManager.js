@@ -22,6 +22,7 @@ import { Fetch } from "../components/ManagerComponent";
 import ErrorSnackbar from "../components/ErrorSnackbar";
 import ReportCreator from "../components/ReportCreator";
 import ReportEditor from "../components/ReportEditor";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const styles = (theme) => ({
   posts: {
@@ -89,7 +90,9 @@ class ReportManager extends Component {
                     error: { message: "Cannot delete a completed report." },
                   });
                 } else {
-                  this.deleteReport(params.row);
+                  this.setState({
+                    toDelete: params.row,
+                  });
                 }
               }}
               color="inherit"
@@ -124,6 +127,7 @@ class ReportManager extends Component {
     loading: true,
     reports: [],
     error: null,
+    toDelete: null,
   };
 
   componentDidMount() {
@@ -154,13 +158,9 @@ class ReportManager extends Component {
   };
 
   deleteReport = async (report) => {
-    if (
-      window.confirm(`Are you sure you want to delete report "${report.id}"`)
-    ) {
-      await Fetch("delete", `/report/${report.id}`)
-        .then(() => this.getReports())
-        .catch((err) => this.setState({ error: err }));
-    }
+    await Fetch("delete", `/report/${report.id}`)
+      .then(() => this.getReports())
+      .catch((err) => this.setState({ error: err }));
   };
 
   renderReportEditor = ({
@@ -226,6 +226,22 @@ class ReportManager extends Component {
           <ErrorSnackbar
             onClose={() => this.setState({ error: null })}
             message={this.state.error.message}
+          />
+        )}
+
+        {this.state.toDelete && (
+          <ConfirmDialog
+            title="Permanently Delete Report?"
+            message={`This will permanently delete this report (id: ${this.state.toDelete.id} | start: ${this.state.toDelete.startDate} | end: ${this.state.toDelete.endDate}). Do you want to continue?`}
+            onAccept={() => {
+              this.deleteReport(this.state.toDelete);
+              this.setState({ toDelete: null });
+            }}
+            onCancel={() => {
+              console.log("Cancelled deletion");
+              this.setState({ toDelete: null });
+            }}
+            state={this.state.toDelete}
           />
         )}
       </Fragment>
