@@ -13,17 +13,17 @@ const Fetch = async (method, endpoint, body) => {
     });
     const text = await response.text();
     if (text.length === 0 && response.ok) {
-      return [null, null];
+      return Promise.resolve();
     }
     if (!response.ok) {
-      throw new Error(
+      return Promise.reject(
         `Encountered error making request to server; Error=${text}; Status=${response.statusText}. Send this error to chandler so he can fix 😎`
       );
     }
-    return [JSON.parse(text), null];
+    return Promise.resolve(JSON.parse(text));
   } catch (error) {
     console.error(error);
-    return [null, error];
+    return Promise.reject(error);
   }
 };
 

@@ -38,7 +38,7 @@ class ReportController {
         if (overlappingReports.length > 0) {
           res.status(409).json({
             message: "overlapping reports found. choose another time range",
-            overlappingReports,
+            overlappingReports: overlappingReports.map((rep) => rep.id),
           });
           return;
         }

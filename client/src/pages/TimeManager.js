@@ -6,7 +6,6 @@ import {
   Fab,
   IconButton,
   Paper,
-  Button,
   Chip,
 } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
@@ -67,24 +66,24 @@ class TimeManager extends Component {
       valueFormatter: (params) => FORMAT_MINUTES(params.row.minutes),
     },
     { field: "notes", headerName: "Notes", flex: 1, sortable: false },
-    {
-      field: "reported",
-      headerName: "Reported",
-      sortable: false,
-      renderCell: (params) => {
-        if (params.row.associatedReportId) {
-          return (
-            <Chip
-              label={`Yes (${params.row.associatedReportId})`}
-              size="small"
-              color="primary"
-            />
-          );
-        } else {
-          return <Chip label="No" size="small" color="secondary" />;
-        }
-      },
-    },
+    // {
+    //   field: "reported",
+    //   headerName: "Reported",
+    //   sortable: false,
+    //   renderCell: (params) => {
+    //     if (params.row.associatedReportId) {
+    //       return (
+    //         <Chip
+    //           label={`Yes (${params.row.associatedReportId})`}
+    //           size="small"
+    //           color="primary"
+    //         />
+    //       );
+    //     } else {
+    //       return <Chip label="No" size="small" color="secondary" />;
+    //     }
+    //   },
+    // },
     {
       field: "billable",
       headerName: "Billable",
@@ -134,39 +133,40 @@ class TimeManager extends Component {
   }
 
   async getPosts() {
-    const [time, err] = await Fetch("get", "/time");
-    if (err) {
-      this.setState({ error: err });
-      return;
-    }
-    const customers = [...new Set(time.map((t) => t.customer))];
-    const serviceItems = [...new Set(time.map((t) => t.serviceItem))];
+    await Fetch("get", "/time")
+      .then((time) => {
+        const customers = [...new Set(time.map((t) => t.customer))];
+        const serviceItems = [...new Set(time.map((t) => t.serviceItem))];
 
-    this.setState({
-      loading: false,
-      posts: time,
-      customers: customers,
-      serviceItems: serviceItems,
-    });
+        this.setState({
+          loading: false,
+          posts: time,
+          customers: customers,
+          serviceItems: serviceItems,
+        });
+      })
+      .catch((err) => this.setState({ error: err }));
   }
 
   savePost = async (post) => {
     console.log("SAVING POST:::", post);
 
-    let err, res;
+    let response;
     if (post.id) {
       const id = post.id;
 
       // Remove unneeded info from post
       delete post.id;
       delete post.associatedReport;
-      [res, err] = await Fetch("put", `/time/${id}`, post);
+      response = await Fetch(
+        "put",
+        `/time/${id}sakldjflkajsdlf`,
+        post
+      ).catch((err) => this.setState({ error: err }));
     } else {
-      [res, err] = await Fetch("post", "/time", post);
-    }
-
-    if (err) {
-      this.setState({ error: err });
+      await Fetch("post", "/time", post).catch((err) =>
+        this.setState({ error: err })
+      );
     }
 
     this.props.history.goBack();
@@ -175,14 +175,9 @@ class TimeManager extends Component {
 
   async deletePost(post) {
     if (window.confirm(`Are you sure you want to delete time "${post.id}"`)) {
-      const [res, err] = await Fetch("delete", `/time/${post.id}`);
-
-      if (err) {
-        this.setState({ error: err });
-        return;
-      }
-
-      this.getPosts();
+      await Fetch("delete", `/time/${post.id}`)
+        .then(() => this.getPosts())
+        .catch((err) => this.setState({ error: err }));
     }
   }
 
@@ -248,7 +243,7 @@ class TimeManager extends Component {
         {this.state.error && (
           <ErrorSnackbar
             onClose={() => this.setState({ error: null })}
-            message={this.state.error.message}
+            message={this.state.error}
           />
         )}
       </Fragment>

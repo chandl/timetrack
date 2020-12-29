@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from "react";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter, Redirect, Route, Link } from "react-router-dom";
 import { compose } from "recompose";
 import {
   Chip,
+  Fab,
   IconButton,
   Paper,
   Typography,
@@ -12,11 +13,14 @@ import {
   Delete as DeleteIcon,
   GetApp as DownloadIcon,
   Edit as EditIcon,
+  Add as AddIcon,
 } from "@material-ui/icons";
 import { DataGrid } from "@material-ui/data-grid";
 
+import { find } from "lodash";
 import { Fetch } from "../components/ManagerComponent";
 import ErrorSnackbar from "../components/ErrorSnackbar";
+import ReportCreator from "../components/ReportCreator";
 
 const styles = (theme) => ({
   posts: {
@@ -126,28 +130,34 @@ class ReportManager extends Component {
   }
 
   async getReports() {
-    const [reports, err] = await Fetch("get", "/report");
-    if (err) {
-      this.setState({ error: err });
-      return;
-    }
-    this.setState({
-      loading: false,
-      reports: reports,
-    });
+    await Fetch("get", "/report")
+      .then((reports) => {
+        this.setState({
+          loading: false,
+          reports: reports,
+        });
+      })
+      .catch((err) => this.setState({ error: err }));
   }
 
   saveReport = async (report) => {
-    let err, res;
     if (report.id) {
-      [res, err] = await Fetch("put", `/report/${report.id}`, report);
-    } else {
-      [res, err] = await Fetch("post", "/report", report);
+      await Fetch("put", `/report/${report.id}`, report).catch((err) =>
+        this.setState({ error: err })
+      );
     }
 
-    if (err) {
-      this.setState({ error: err });
-    }
+    // let response;
+    // if (report.id) {
+    //   // response = await Fetch("put", `/report/${report.id}`, report);
+    // } else {
+    //   console.log("saveReport() called for new report")
+    //   //response = await Fetch("post", "/report", report);
+    // }
+
+    // if (response[1]) {
+    //   this.setState({ error: response[1] });
+    // }
 
     this.props.history.goBack();
     this.getReports();
@@ -157,15 +167,27 @@ class ReportManager extends Component {
     if (
       window.confirm(`Are you sure you want to delete report "${report.id}"`)
     ) {
-      const [res, err] = await Fetch("delete", `/report/${report.id}`);
-
-      if (err) {
-        this.setState({ error: err });
-        return;
-      }
-
-      this.getReports();
+      await Fetch("delete", `/report/${report.id}`)
+        .then(() => this.getReports())
+        .catch((err) => this.setState({ error: err }));
     }
+  };
+
+  renderReportEditor = ({
+    match: {
+      params: { id },
+    },
+  }) => {
+    if (this.state.loading) return null;
+
+    if (id === "new") {
+      const report = Object.assign({}); // todo defaults
+      return <ReportCreator report={report} onSave={this.saveReport} />;
+    }
+
+    // let report = find(this.state.reports, { id: Number(id) });
+    // if (!report && id !== "new") return <Redirect to="/report" />;
+    // return <ReportEditor report={report} onSave={this.saveReport} />;
   };
 
   render() {
@@ -197,6 +219,16 @@ class ReportManager extends Component {
           )
         )}
 
+        <Fab
+          color="secondary"
+          aria-label="add report"
+          className={classes.fab}
+          component={Link}
+          to="/report/new"
+        >
+          <AddIcon />
+        </Fab>
+        <Route exact path="/report/:id" render={this.renderReportEditor} />
         {this.state.error && (
           <ErrorSnackbar
             onClose={() => this.setState({ error: null })}
