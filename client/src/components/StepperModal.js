@@ -59,7 +59,10 @@ const StepperModal = ({ classes, steps, onSave, onClose }) => {
           <Stepper nonLinear activeStep={activeStep}>
             {steps.map((step, index) => (
               <Step key={step.name}>
-                <StepButton onClick={changeStep(index)} disabled={true}>
+                <StepButton
+                  onClick={changeStep(index)}
+                  disabled={!step.isEnabled || !step.isEnabled()}
+                >
                   {step.name}
                 </StepButton>
               </Step>

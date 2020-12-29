@@ -201,7 +201,6 @@ class ReportManager extends Component {
                   sortModel={REPORT_COL_SORT}
                   rows={this.state.reports}
                   columns={this.reportColumns}
-                  checkboxSelection
                 />
               </div>
             </div>

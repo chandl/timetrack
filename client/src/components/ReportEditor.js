@@ -21,40 +21,72 @@ const getReport = async (reportId) => {
 
 const ReportEditor = ({ classes, report, onSave, history }) => {
   const [activeReport, setActiveReport] = React.useState();
+  const [steps, setSteps] = React.useState();
 
   useEffect(() => {
-    getReport(report.id)
-      .then((res) => setActiveReport(res));
+    getReport(report.id).then((rep) => {
+      setActiveReport(rep);
+      setSteps(generateSteps(rep));
+    });
   }, [report.id]);
 
-  const STEPS = [
-    {
-      name: "Review Report",
-      content: (
-        <div>
-          <p>Review report</p>
-          <br /> {JSON.stringify(activeReport)}
-        </div>
-      ),
-      validate: () => Promise.resolve(),
-      complete: () => Promise.resolve(),
-    }, 
-    // !activeReport ? [] : activeReport.times.map(time => {
-    //   return {name: "AAA" + time,
-    //   content: (<div></div>),
-    //   validate: () => {},
-    //   complete: () => {}}
-    // })
-  ];
+  const generateSteps = (report) => {
+    let i = 1;
+    const weeklyReview = report.details.map((week) => {
+      return {
+        name: `Review Week ${i++}`,
+        content: (
+          <div>
+            Review week <br /> {JSON.stringify(week)}
+          </div>
+        ),
+        validate: () => Promise.resolve(),
+        complete: () => Promise.resolve(),
+        isEnabled: () => true,
+      };
+    });
 
-  return (
+    return [
+      {
+        name: "Report Overview",
+        content: (
+          <div>
+            <p>Review report</p>
+            <br /> {JSON.stringify(report)}
+          </div>
+        ),
+        validate: () => Promise.resolve(),
+        complete: () => Promise.resolve(),
+        isEnabled: () => true,
+      },
+    ]
+      .concat(weeklyReview)
+      .concat([
+        {
+          name: "Finalize Report",
+          content: (
+            <div>
+              <p>Finalize Report</p>
+              <br /> TODO
+            </div>
+          ),
+          validate: () => Promise.resolve(),
+          complete: () => Promise.resolve(),
+          isEnabled: () => true,
+        },
+      ]);
+  };
+
+  return steps ? (
     <StepperModal
       classes={classes}
       history={history}
       onSave={() => onSave(report)}
       onClose={() => onSave(report)}
-      steps={STEPS}
+      steps={steps}
     />
+  ) : (
+    <span>Loading steps...</span>
   );
 };
 
