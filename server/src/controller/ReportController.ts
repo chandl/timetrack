@@ -3,7 +3,6 @@ import { Between, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { connection } from "../connection/Connection";
 import { ReportStatus } from "../dto/ReportDto";
 import { ReportRequest } from "../dto/ReportRequest";
-import { ReportResponse } from "../dto/ReportResponse";
 import { Report } from "../entity/Report";
 import { Time } from "../entity/Time";
 import { Mapper } from "../mapper/Mapper";
@@ -64,14 +63,7 @@ class ReportController {
           await conn.manager.save(time);
         });
 
-        res
-          .status(200)
-          .json(
-            new ReportResponse(
-              mapper.mapReportToDto(report),
-              sortTimesByCustomer(timesFromDb)
-            )
-          );
+        res.status(200).json(mapper.mapReportDetail(report, timesFromDb));
       })
       .catch((err) => {
         console.error("Error creating new report", err);
@@ -95,14 +87,8 @@ class ReportController {
           associatedReport: existingReport,
         });
 
-        res
-          .status(200)
-          .json(
-            new ReportResponse(
-              mapper.mapReportToDto(existingReport),
-              sortTimesByCustomer(times)
-            )
-          );
+        const detail = mapper.mapReportDetail(existingReport, times);
+        res.status(200).json(detail);
       })
       .catch((err) => {
         console.error("Error getting report by ID", err);
@@ -147,34 +133,6 @@ class ReportController {
 }
 
 export { ReportController };
-
-const getNumberOfWeekdays = (startDate: Date, endDate: Date): number => {
-  let numWorkDays = 0;
-  let currentDate = new Date(startDate);
-  while (currentDate <= endDate) {
-    // Skips Sunday and Saturday
-    if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
-      numWorkDays++;
-    }
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-  return numWorkDays;
-};
-
-const sortTimesByCustomer = (times: Time[]): Map<string, any> => {
-  // Map the data to response
-  let customers: Map<string, any> = new Map();
-  times.forEach((t) => {
-    // clone to prevent report from being overwritten
-    const time = Object.assign({}, t);
-    delete time.associatedReport;
-    customers[time.customer.toLowerCase()] =
-      customers[time.customer.toLowerCase()] || [];
-    customers[time.customer.toLowerCase()].push(time);
-  });
-
-  return customers;
-};
 
 const calculateTotalTime = (times: Time[]): number => {
   return times.map((time) => time.minutes).reduce((a, b) => a + b);

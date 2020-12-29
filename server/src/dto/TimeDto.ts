@@ -1,4 +1,4 @@
-export type TimeDto = {
+export interface TimeDto {
   id: number;
   day: string;
   customer: string;
@@ -9,4 +9,4 @@ export type TimeDto = {
   startTime: Date;
   endTime: Date;
   associatedReportId: number;
-};
+}

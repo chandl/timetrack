@@ -23,7 +23,8 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
   const [activeReport, setActiveReport] = React.useState();
 
   useEffect(() => {
-    getReport(report.id).then((res) => setActiveReport(res));
+    getReport(report.id)
+      .then((res) => setActiveReport(res));
   }, [report.id]);
 
   const STEPS = [
@@ -37,7 +38,13 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
       ),
       validate: () => Promise.resolve(),
       complete: () => Promise.resolve(),
-    },
+    }, 
+    // !activeReport ? [] : activeReport.times.map(time => {
+    //   return {name: "AAA" + time,
+    //   content: (<div></div>),
+    //   validate: () => {},
+    //   complete: () => {}}
+    // })
   ];
 
   return (

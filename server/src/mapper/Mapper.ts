@@ -1,4 +1,4 @@
-import { ReportDto } from "../dto/ReportDto";
+import { ReportDto, ReportTimeDetail, CustomerDetail } from "../dto/ReportDto";
 import { TimeDto } from "../dto/TimeDto";
 import { Report } from "../entity/Report";
 import { Time } from "../entity/Time";
@@ -49,7 +49,114 @@ class Mapper {
 
     return mapped;
   }
+
+  public mapReportDetail(reportDao: Report, times: Time[]): ReportDto {
+    const dto = this.mapReportToDto(reportDao);
+    dto.details = this.mapTimeDetails(
+      reportDao.startDate,
+      reportDao.endDate,
+      times
+    );
+    return dto;
+  }
+
+  private mapTimeDetails(
+    startDate: Date,
+    endDate: Date,
+    times: Time[]
+  ): ReportTimeDetail[] {
+    const reportDateRanges = getReportWeeks(startDate, endDate);
+    console.log(
+      `Found date ranges startDate=${JSON.stringify(
+        startDate
+      )} endDate=${JSON.stringify(endDate)} ranges=${JSON.stringify(
+        reportDateRanges
+      )}`
+    );
+
+    const details: ReportTimeDetail[] = [];
+    reportDateRanges.forEach((dateRange) => {
+      // get all times between startDate, endDate
+      const startDate = new Date(dateRange.startDate);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(dateRange.endDate);
+      endDate.setHours(23, 59, 59, 999);
+
+      const timesInRange = times.filter(
+        (t) => t.day >= startDate && t.day <= endDate
+      );
+
+      // sort by customer
+      const customerDetailsInRange = this.sortTimesByCustomer(timesInRange);
+
+      // add to response
+      details.push({
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate,
+        customers: customerDetailsInRange,
+      });
+    });
+
+    return details;
+  }
+
+  private sortTimesByCustomer(times: Time[]): CustomerDetail[] {
+    // Map the data to response
+    const customers = {};
+    times.forEach((t) => {
+      // clone to prevent report from being overwritten
+      const time = Object.assign({}, t);
+      delete time.associatedReport;
+      customers[time.customer.toLowerCase()] =
+        customers[time.customer.toLowerCase()] || [];
+      customers[time.customer.toLowerCase()].push(time);
+    });
+
+    return Object.keys(customers).map((cust) => {
+      return {
+        customer: cust,
+        times: customers[cust].map((timeDao) => this.mapToDto(timeDao)),
+      };
+    });
+  }
 }
+
+const getReportWeeks = (startDate: Date, endDate: Date): DateRange[] => {
+  const reportWeeks = [];
+
+  let currStart = new Date(startDate);
+  let prevDay = new Date(startDate);
+  let currDay = new Date(startDate);
+
+  while (currDay <= endDate) {
+    if (currDay.getDay() === 6 && currDay != startDate) {
+      // sunday - start new week
+      reportWeeks.push({
+        startDate: getDayFromDate(currStart),
+        endDate: getDayFromDate(prevDay),
+      });
+
+      currStart = new Date(currDay);
+    }
+
+    prevDay = new Date(currDay);
+    currDay.setDate(currDay.getDate() + 1);
+  }
+
+  if (prevDay != currStart) {
+    reportWeeks.push({
+      startDate: getDayFromDate(currStart),
+      endDate: getDayFromDate(prevDay),
+    });
+  }
+
+  return reportWeeks;
+};
+
+type DateRange = {
+  startDate: string;
+  endDate: string;
+};
 
 const getDayFromDate = (date: Date): string => {
   return date.toISOString().split("T")[0];
