@@ -5,6 +5,13 @@ import { Mapper } from "../mapper/Mapper";
 import ServiceError from "../error/ServiceError";
 import { Between, In, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 
+const handleErr = (err) =>
+  err instanceof ServiceError
+    ? Promise.reject(err)
+    : Promise.reject(
+        new ServiceError({ code: 500, message: JSON.stringify(err) })
+      );
+
 export default class TimeService {
   private mapper: Mapper;
   constructor() {
@@ -27,11 +34,13 @@ export default class TimeService {
     });
   };
 
-  public getTimesByFilter = async ({
-    startDate,
-    endDate,
-    customer,
-  }): Promise<TimeDto[] | ServiceError> => {
+  public getTimesByFilter = async (
+    timeFilter: TimeFilter
+  ): Promise<TimeDto[]> => {
+    const { startDate, endDate, customer, associatedReportId } = {
+      ...timeFilter,
+    };
+
     const filter: { [key: string]: any } = {};
     if (startDate && endDate) {
       filter.day = Between(startDate, endDate);
@@ -42,6 +51,9 @@ export default class TimeService {
     }
     if (customer) {
       filter.customer = customer;
+    }
+    if (associatedReportId) {
+      filter.associatedReportId = associatedReportId;
     }
     filter.active = true;
 
@@ -95,13 +107,7 @@ export default class TimeService {
           .save(updatedTime)
           .then((entity) => Promise.resolve(this.mapper.mapToDto(entity)));
       })
-      .catch((err) =>
-        err instanceof ServiceError
-          ? Promise.reject(err)
-          : Promise.reject(
-              new ServiceError({ code: 500, message: JSON.stringify(err) })
-            )
-      );
+      .catch((err) => handleErr(err));
   };
 
   public deleteTime = async (timeId: string): Promise<void | ServiceError> => {
@@ -122,13 +128,7 @@ export default class TimeService {
           .save(existingTime)
           .then((entity) => Promise.resolve());
       })
-      .catch((err) =>
-        err instanceof ServiceError
-          ? Promise.reject(err)
-          : Promise.reject(
-              new ServiceError({ code: 500, message: JSON.stringify(err) })
-            )
-      );
+      .catch((err) => handleErr(err));
 
     // HARD DELETE
     /*connection
@@ -185,13 +185,7 @@ export default class TimeService {
           .save(merged)
           .then((entity) => Promise.resolve(this.mapper.mapToDto(entity)));
       })
-      .catch((err) =>
-        err instanceof ServiceError
-          ? Promise.reject(err)
-          : Promise.reject(
-              new ServiceError({ code: 500, message: JSON.stringify(err) })
-            )
-      );
+      .catch((err) => handleErr(err));
   };
 
   private doMergeTimes = (times: Time[]): Promise<Time> => {
@@ -243,3 +237,10 @@ const validateMergeTimes = (timesToMerge: Time[]): Promise<Time[]> => {
   }
   return Promise.resolve(timesToMerge);
 };
+
+interface TimeFilter {
+  startDate?: any;
+  endDate?: any;
+  customer?: any;
+  associatedReportId?: any;
+}

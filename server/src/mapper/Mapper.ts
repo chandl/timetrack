@@ -19,6 +19,9 @@ class Mapper {
     time.serviceItem = requestTime.serviceItem;
     time.active = true;
 
+    if (requestTime.associatedReportId)
+      time.associatedReportId = requestTime.associatedReportId;
+
     return time;
   }
 
@@ -51,7 +54,7 @@ class Mapper {
     return mapped;
   }
 
-  public mapReportDetail(reportDao: Report, times: Time[]): ReportDto {
+  public mapReportDetail(reportDao: Report, times: TimeDto[]): ReportDto {
     const dto = this.mapReportToDto(reportDao);
     dto.details = this.mapTimeDetails(
       reportDao.startDate,
@@ -64,21 +67,14 @@ class Mapper {
   private mapTimeDetails(
     startDate: Date,
     endDate: Date,
-    times: Time[]
+    times: TimeDto[]
   ): ReportTimeDetail[] {
     const reportDateRanges = getReportWeeks(startDate, endDate);
-    // console.log(
-    //   `Found date ranges startDate=${JSON.stringify(
-    //     startDate
-    //   )} endDate=${JSON.stringify(endDate)} ranges=${JSON.stringify(
-    //     reportDateRanges
-    //   )}`
-    // );
 
     const details: ReportTimeDetail[] = [];
     reportDateRanges.forEach((dateRange) => {
       const timesInRange = times.filter((t) => {
-        const day = getDayFromDate(t.day);
+        const day = t.day;
         return day >= dateRange.startDate && day <= dateRange.endDate;
       });
 
@@ -96,13 +92,12 @@ class Mapper {
     return details;
   }
 
-  private sortTimesByCustomer(times: Time[]): CustomerDetail[] {
+  private sortTimesByCustomer(times: TimeDto[]): CustomerDetail[] {
     // Map the data to response
     const customers = {};
     times.forEach((t) => {
       // clone to prevent report from being overwritten
       const time = Object.assign({}, t);
-      delete time.associatedReport;
       customers[time.customer.toLowerCase()] =
         customers[time.customer.toLowerCase()] || [];
       customers[time.customer.toLowerCase()].push(time);
@@ -111,7 +106,7 @@ class Mapper {
     return Object.keys(customers).map((cust) => {
       return {
         customer: cust,
-        times: customers[cust].map((timeDao) => this.mapToDto(timeDao)),
+        times: customers[cust],
       };
     });
   }

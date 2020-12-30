@@ -15,7 +15,7 @@ class TimeController {
     this.reportService = reportService;
   }
 
-  getTimeById = (req: Request, res: Response) => {
+  public getTimeById = (req: Request, res: Response) => {
     console.info("Getting time with id=", req.params.id);
     this.timeService
       .getById(req.params.id)
@@ -26,7 +26,7 @@ class TimeController {
       });
   };
 
-  getTimes = (req: Request, res: Response) => {
+  public getTimes = (req: Request, res: Response) => {
     this.timeService
       .getTimesByFilter({
         startDate: req.query.startDate,
@@ -40,7 +40,7 @@ class TimeController {
       });
   };
 
-  addTime = (req: Request, res: Response) => {
+  public addTime = (req: Request, res: Response) => {
     const time = mapper.mapTime(req.body);
     console.info(`Adding new time=${JSON.stringify(time)}`);
     this.timeService
@@ -52,7 +52,7 @@ class TimeController {
       });
   };
 
-  updateTime = (req: Request, res: Response) => {
+  public updateTime = (req: Request, res: Response) => {
     console.info(
       `Updating time with id=${req.params.id};  new=${JSON.stringify(req.body)}`
     );
@@ -66,7 +66,7 @@ class TimeController {
       });
   };
 
-  deleteTime = (req: Request, res: Response) => {
+  public deleteTime = (req: Request, res: Response) => {
     console.info("Deleting time with id=", req.params.id);
     this.timeService
       .deleteTime(req.params.id)
@@ -83,7 +83,7 @@ class TimeController {
    *       "toMerge": [id1, id2, id3, etc...]
    *   }
    */
-  mergeTime = (req: Request, res: Response) => {
+  public mergeTime = (req: Request, res: Response) => {
     console.info("Merging times with ids=", req.body.toMerge);
     this.timeService
       .mergeTimes(req.body.toMerge)
