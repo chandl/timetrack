@@ -5,10 +5,14 @@ import * as dotenv from "dotenv";
 import * as morgan from "morgan";
 import { Routes } from "./routes/Routes";
 import bodyParser = require("body-parser");
+import TimeService from "./service/TimeService";
+import ReportService from "./service/ReportService";
 
 class App {
   public app: express.Application;
   public routePrv: Routes;
+  private timeService: TimeService;
+  private reportService: ReportService;
 
   constructor() {
     dotenv.config();
@@ -20,7 +24,13 @@ class App {
     this.app.use(cors()); // cors support
     this.app.use(morgan("common")); // logging
 
-    this.routePrv = new Routes();
+    this.timeService = new TimeService();
+    this.reportService = new ReportService();
+
+    this.routePrv = new Routes({
+      timeService: this.timeService,
+      reportService: this.reportService,
+    });
     this.routePrv.routes(this.app);
 
     // Error handling

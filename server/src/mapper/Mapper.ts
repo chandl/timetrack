@@ -77,12 +77,10 @@ class Mapper {
 
     const details: ReportTimeDetail[] = [];
     reportDateRanges.forEach((dateRange) => {
-      const timesInRange = times.filter(
-        (t) => {
-          const day = getDayFromDate(t.day)
-          return day >= dateRange.startDate && day <= dateRange.endDate;
-        }
-      );
+      const timesInRange = times.filter((t) => {
+        const day = getDayFromDate(t.day);
+        return day >= dateRange.startDate && day <= dateRange.endDate;
+      });
 
       // sort by customer
       const customerDetailsInRange = this.sortTimesByCustomer(timesInRange);

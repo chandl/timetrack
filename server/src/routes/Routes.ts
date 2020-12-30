@@ -26,8 +26,8 @@ class Routes {
   private timeController: TimeController;
   private reportController: ReportController;
 
-  constructor() {
-    this.timeController = new TimeController();
+  constructor(services) {
+    this.timeController = new TimeController(services);
     this.reportController = new ReportController();
   }
 
