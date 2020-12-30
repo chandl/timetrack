@@ -6,6 +6,7 @@ import StepperModal from "./StepperModal";
 import { Fetch } from "./ManagerComponent";
 import { ReportOverview } from "./ReportOverview";
 import { ReportWeek } from "./ReportWeek";
+import { FinalizeReport } from "./FinalizeReport";
 
 const styles = (theme) => ({
   marginTop: {
@@ -56,30 +57,15 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
       };
     });
 
-    return [
+    return weeklyReview.concat([
       {
-        name: "Report Overview",
+        name: "Finalize Report",
         content: <ReportOverview classes={classes} report={report} />,
         validate: () => Promise.resolve(),
         complete: () => Promise.resolve(),
         isEnabled: () => true,
       },
-    ]
-      .concat(weeklyReview)
-      .concat([
-        {
-          name: "Finalize Report",
-          content: (
-            <div>
-              <p>Finalize Report</p>
-              <br /> TODO
-            </div>
-          ),
-          validate: () => Promise.resolve(),
-          complete: () => Promise.resolve(),
-          isEnabled: () => true,
-        },
-      ]);
+    ]);
   };
 
   return steps ? (

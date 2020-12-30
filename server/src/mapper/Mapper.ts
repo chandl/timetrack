@@ -67,24 +67,21 @@ class Mapper {
     times: Time[]
   ): ReportTimeDetail[] {
     const reportDateRanges = getReportWeeks(startDate, endDate);
-    console.log(
-      `Found date ranges startDate=${JSON.stringify(
-        startDate
-      )} endDate=${JSON.stringify(endDate)} ranges=${JSON.stringify(
-        reportDateRanges
-      )}`
-    );
+    // console.log(
+    //   `Found date ranges startDate=${JSON.stringify(
+    //     startDate
+    //   )} endDate=${JSON.stringify(endDate)} ranges=${JSON.stringify(
+    //     reportDateRanges
+    //   )}`
+    // );
 
     const details: ReportTimeDetail[] = [];
     reportDateRanges.forEach((dateRange) => {
-      // get all times between startDate, endDate
-      const startDate = new Date(dateRange.startDate);
-      startDate.setHours(0, 0, 0, 0);
-      const endDate = new Date(dateRange.endDate);
-      endDate.setHours(23, 59, 59, 999);
-
       const timesInRange = times.filter(
-        (t) => t.day >= startDate && t.day <= endDate
+        (t) => {
+          const day = getDayFromDate(t.day)
+          return day >= dateRange.startDate && day <= dateRange.endDate;
+        }
       );
 
       // sort by customer

@@ -86,7 +86,6 @@ export const ReportWeek = ({ week, reload }) => {
   // index, content, label
   let index = 0;
   const customerTabs = week.customers.map((cust) => {
-    console.log("CUST TIMES:::", cust.times);
     return {
       index: index++,
       label: cust.customer,

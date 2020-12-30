@@ -134,7 +134,3 @@ class ReportController {
 }
 
 export { ReportController };
-
-const calculateTotalTime = (times: Time[]): number => {
-  return times.map((time) => time.minutes).reduce((a, b) => a + b);
-};
