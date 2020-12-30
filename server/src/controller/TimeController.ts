@@ -171,7 +171,6 @@ class TimeController {
               res.json(mapper.mapToDto(entity));
             });
           })
-          //todo merge
           .catch((err) => res.status(400).json(err));
       })
       .catch((err) => {

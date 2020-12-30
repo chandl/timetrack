@@ -171,8 +171,7 @@ class ReportManager extends Component {
     if (this.state.loading) return null;
 
     if (id === "new") {
-      const report = Object.assign({}); // todo defaults
-      return <ReportCreator report={report} onSave={this.saveReport} />;
+      return <ReportCreator report={{}} onSave={this.saveReport} />;
     }
 
     let report = find(this.state.reports, { id: Number(id) });
