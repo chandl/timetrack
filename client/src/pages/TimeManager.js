@@ -136,7 +136,7 @@ class TimeManager extends Component {
       // Remove unneeded info from post
       delete post.id;
       delete post.associatedReport;
-      await Fetch("put", `/time/${id}sakldjflkajsdlf`, post).catch((err) =>
+      await Fetch("put", `/time/${id}`, post).catch((err) =>
         this.setState({ error: err })
       );
     } else {
@@ -187,6 +187,7 @@ class TimeManager extends Component {
             <TimeTable
               rows={this.state.posts}
               columns={this.timeColumns}
+              onMerge={() => this.getPosts()}
               props={{
                 rowsPerPageOptions: [10, 25, 50, 100],
                 pageSize: 25,

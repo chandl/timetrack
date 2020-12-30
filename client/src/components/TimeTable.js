@@ -11,7 +11,7 @@ const TIME_COL_SORT = [
   },
 ];
 
-export const TimeTable = ({ rows, columns, props }) => {
+export const TimeTable = ({ rows, columns, onMerge, props }) => {
   const [selectedRows, setSelectedRows] = React.useState([]);
   const [error, setError] = React.useState(null);
 
@@ -19,7 +19,10 @@ export const TimeTable = ({ rows, columns, props }) => {
     await Fetch("post", "/time/merge", {
       toMerge: timeIdList,
     })
-      .then((res) => console.log("MERGED:::", res))
+      .then((res) => {
+        console.log("MERGED:::", res);
+        onMerge();
+      })
       .catch((err) => setError(err));
   };
 

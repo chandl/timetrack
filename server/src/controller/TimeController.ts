@@ -1,3 +1,4 @@
+import { time } from "console";
 import { Request, Response } from "express";
 import { Between, In, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { connection } from "../connection/Connection";
@@ -42,6 +43,9 @@ class TimeController {
     if (customer) {
       filter.customer = customer;
     }
+
+    filter.active = true;
+
     console.log("Getting all times with filter", filter);
 
     // SEARCH DATABASE
@@ -153,10 +157,19 @@ class TimeController {
             return times;
           })
           .then((times) => validateMergeTimes(times))
+          .then((times) => {
+            times.forEach((t) => {
+              t.active = false;
+              conn.manager.save(t);
+            });
+            return times;
+          })
           .then((times) => mergeTimes(times))
           .then((time) => {
             console.log("Successfully merged times", time);
-            res.json(mapper.mapToDto(time));
+            conn.manager.save(time).then((entity) => {
+              res.json(mapper.mapToDto(entity));
+            });
           })
           //todo merge
           .catch((err) => res.status(400).json(err));
@@ -174,28 +187,31 @@ const validateMergeTimes = (timesToMerge: Time[]): Promise<Time[]> => {
   const expectedCustomer = timesToMerge[0].customer;
   const expectedServiceItem = timesToMerge[0].serviceItem;
   const expectedBillable = timesToMerge[0].billable;
+  const expectedReport = timesToMerge[0].associatedReportId;
 
   const validMergeTimes = timesToMerge.filter(
     (time) =>
       time.customer === expectedCustomer &&
       time.serviceItem === expectedServiceItem &&
-      time.billable === expectedBillable
+      time.billable === expectedBillable &&
+      time.associatedReportId === expectedReport
   );
 
   console.log("hello");
 
   if (validMergeTimes.length != timesToMerge.length) {
     console.log(
-      "Could not merge entries: customer, serviceItem, and billable must be the same"
+      "Could not merge entries: customer, serviceItem, report, and billable must be the same"
     );
     return Promise.reject({
       message:
-        "Could not merge entries: customer, serviceItem, and billable must be the same",
+        "Could not merge entries: customer, serviceItem, report, and billable must be the same",
       invalid: timesToMerge.filter((time) => !validMergeTimes.includes(time)),
       expected: {
         customer: expectedCustomer,
         serviceItem: expectedServiceItem,
         billable: expectedBillable,
+        associatedReport: expectedReport,
       },
     });
   }
@@ -205,13 +221,15 @@ const validateMergeTimes = (timesToMerge: Time[]): Promise<Time[]> => {
 const mergeTimes = (times: Time[]): Promise<Time> => {
   // Make a clone of the first time
   const mergedTime: Time = mapper.mapTime(times[0]);
-  mergedTime.notes += ` (${mergedTime.minutes} min)`;
+  if (times[0].associatedReportId)
+    mergedTime.associatedReportId = times[0].associatedReportId;
+  mergedTime.notes = `[${times[0].id}] ${mergedTime.notes} (${mergedTime.minutes} min)`;
 
   let curr: Time;
   for (let i = 1; i < times.length; i++) {
     curr = times[i];
     mergedTime.minutes += curr.minutes;
-    mergedTime.notes += `\n${curr.notes} (${curr.minutes} min)`;
+    mergedTime.notes += `\n[${curr.id}] ${curr.notes} (${curr.minutes} min)`;
   }
 
   return Promise.resolve(mergedTime);

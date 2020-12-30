@@ -17,6 +17,7 @@ class Mapper {
     time.startTime = requestTime.startTime;
     time.endTime = requestTime.endTime;
     time.serviceItem = requestTime.serviceItem;
+    time.active = true;
 
     return time;
   }

@@ -84,6 +84,7 @@ class ReportController {
         }
 
         const times = await conn.manager.find(Time, {
+          active: true,
           associatedReport: existingReport,
         });
 

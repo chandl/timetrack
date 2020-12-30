@@ -35,4 +35,7 @@ export class Time {
 
   @Column({ nullable: true })
   associatedReportId: number;
+
+  @Column()
+  active: boolean;
 }

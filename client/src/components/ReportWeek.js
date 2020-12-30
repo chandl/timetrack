@@ -73,6 +73,7 @@ export const ReportWeek = ({ week }) => {
           <TimeTable
             rows={cust.times}
             columns={timeColumns}
+            onMerge={() => window.location.reload(false)}
             props={{
               rowsPerPageOptions: [5, 10, 15],
               pageSize: 5,
