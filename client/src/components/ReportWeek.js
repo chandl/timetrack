@@ -1,13 +1,28 @@
+import React from "react";
+import { Link } from "react-router-dom";
+
 import { Chip, IconButton, Typography } from "@material-ui/core";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@material-ui/icons";
 import { TimeTable } from "./TimeTable";
 import {
+  Fetch,
   formatMinutes,
   roundMinutesToNearestFifteen,
 } from "./ManagerComponent";
 import ReportCustomerTabs from "./ReportCustomerTabs";
+import ErrorSnackbar from "./ErrorSnackbar";
+import ConfirmDialog from "./ConfirmDialog";
 
-export const ReportWeek = ({ week }) => {
+export const ReportWeek = ({ week, reload }) => {
+  const [timeToDelete, setTimeToDelete] = React.useState(null);
+  const [error, setError] = React.useState(null);
+
+  const deleteTime = async (time) => {
+    await Fetch("delete", `/time/${time.id}`)
+      .then(() => reload())
+      .catch((err) => setError(err));
+  };
+
   const timeColumns = [
     { field: "day", headerName: "Date", width: 110 },
     { field: "customer", headerName: "Customer" },
@@ -50,10 +65,17 @@ export const ReportWeek = ({ week }) => {
       width: 150,
       renderCell: (params) => (
         <>
-          <IconButton color="inherit">
+          <IconButton
+            component={Link}
+            to={`/time/${params.row.id}`}
+            color="inherit"
+          >
             <EditIcon />
           </IconButton>
-          <IconButton color="inherit">
+          <IconButton
+            onClick={() => setTimeToDelete(params.row)}
+            color="inherit"
+          >
             <DeleteIcon />
           </IconButton>
         </>
@@ -73,7 +95,7 @@ export const ReportWeek = ({ week }) => {
           <TimeTable
             rows={cust.times}
             columns={timeColumns}
-            onMerge={() => window.location.reload(false)}
+            onMerge={() => reload()}
             props={{
               rowsPerPageOptions: [5, 10, 15],
               pageSize: 5,
@@ -100,6 +122,23 @@ export const ReportWeek = ({ week }) => {
           </Typography>
         )}
       </div>
+      {timeToDelete && (
+        <ConfirmDialog
+          title="Permanently Delete Time?"
+          message={`This will permanently delete this time (day: ${timeToDelete.day} | minutes: ${timeToDelete.minutes} | notes: '${timeToDelete.notes}'). Do you want to continue?`}
+          onAccept={() => {
+            deleteTime(timeToDelete);
+            setTimeToDelete(null);
+          }}
+          onCancel={() => {
+            console.log("Cancelled deletion");
+            setTimeToDelete(null);
+          }}
+        />
+      )}
+      {error && (
+        <ErrorSnackbar onClose={() => setError(null)} message={error} />
+      )}
     </div>
   );
 };

@@ -42,7 +42,14 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
     const weeklyReview = report.details.map((week) => {
       return {
         name: `Review Week ${i++}`,
-        content: <ReportWeek week={week} />,
+        content: (
+          <ReportWeek
+            week={week}
+            reload={() =>
+              getReport(report.id).then((rep) => setSteps(generateSteps(rep)))
+            }
+          />
+        ),
         validate: () => Promise.resolve(),
         complete: () => Promise.resolve(),
         isEnabled: () => true,
