@@ -1,6 +1,8 @@
 import { Button } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
 import React from "react";
+import ErrorSnackbar from "./ErrorSnackbar";
+import { Fetch } from "./ManagerComponent";
 
 const TIME_COL_SORT = [
   {
@@ -11,6 +13,15 @@ const TIME_COL_SORT = [
 
 export const TimeTable = ({ rows, columns, props }) => {
   const [selectedRows, setSelectedRows] = React.useState([]);
+  const [error, setError] = React.useState(null);
+
+  const mergeTimes = async (timeIdList) => {
+    await Fetch("post", "/time/merge", {
+      toMerge: timeIdList,
+    })
+      .then((res) => console.log("MERGED:::", res))
+      .catch((err) => setError(err));
+  };
 
   return (
     <div
@@ -24,7 +35,12 @@ export const TimeTable = ({ rows, columns, props }) => {
       <div>
         {selectedRows.length > 1 ? (
           <div>
-            <Button variant="contained" color="primary" disableElevation>
+            <Button
+              onClick={() => mergeTimes(selectedRows)}
+              variant="contained"
+              color="primary"
+              disableElevation
+            >
               Merge Times
             </Button>
           </div>
@@ -45,12 +61,16 @@ export const TimeTable = ({ rows, columns, props }) => {
           sortModel={TIME_COL_SORT}
           rows={rows}
           columns={columns}
+          checkboxSelection
           onSelectionChange={(newSelection) => {
             setSelectedRows(newSelection.rowIds);
           }}
           {...props}
         />
       </div>
+      {error && (
+        <ErrorSnackbar onClose={() => setError(null)} message={error} />
+      )}
     </div>
   );
 };

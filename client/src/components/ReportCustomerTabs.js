@@ -77,7 +77,6 @@ export default function ReportCustomerTabs({ customerTabs }) {
 
       <div style={{ width: "100%" }}>
         {customerTabs.map((tab) => {
-          // console.log("MAPPING CONTNET:::", tab)
           return (
             <TabPanel value={value} index={tab.index}>
               {tab.content}

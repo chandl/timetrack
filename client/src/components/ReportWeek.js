@@ -76,7 +76,6 @@ export const ReportWeek = ({ week }) => {
             props={{
               rowsPerPageOptions: [5, 10, 15],
               pageSize: 5,
-              checkboxSelection: true,
             }}
           />
         </div>
