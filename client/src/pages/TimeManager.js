@@ -8,7 +8,6 @@ import {
   Paper,
   Chip,
 } from "@material-ui/core";
-import { DataGrid } from "@material-ui/data-grid";
 
 import {
   Delete as DeleteIcon,
@@ -22,19 +21,13 @@ import TimeEditor from "../components/TimeEditor";
 import ErrorSnackbar from "../components/ErrorSnackbar";
 import { Fetch, formatMinutes } from "../components/ManagerComponent";
 import ConfirmDialog from "../components/ConfirmDialog";
+import { TimeTable } from "../components/TimeTable";
 
 const TIME_DEFAULTS = {
   minutes: 0,
   day: new Date().toISOString().split("T")[0],
   billable: true,
 };
-
-const TIME_COL_SORT = [
-  {
-    field: "day",
-    sort: "desc",
-  },
-];
 
 const styles = (theme) => ({
   posts: {
@@ -68,24 +61,7 @@ class TimeManager extends Component {
       flex: 1,
       sortable: false,
     },
-    // {
-    //   field: "reported",
-    //   headerName: "Reported",
-    //   sortable: false,
-    //   renderCell: (params) => {
-    //     if (params.row.associatedReportId) {
-    //       return (
-    //         <Chip
-    //           label={`Yes (${params.row.associatedReportId})`}
-    //           size="small"
-    //           color="primary"
-    //         />
-    //       );
-    //     } else {
-    //       return <Chip label="No" size="small" color="secondary" />;
-    //     }
-    //   },
-    // },
+
     {
       field: "billable",
       headerName: "Billable",
@@ -208,20 +184,14 @@ class TimeManager extends Component {
         <Typography variant="h4">Time Manager</Typography>
         {this.state.posts.length > 0 ? (
           <Paper elevation={1} className={classes.posts}>
-            <div style={{ display: "flex", height: "100%" }}>
-              <div style={{ flexGrow: 1 }}>
-                <DataGrid
-                  autoHeight
-                  rowsPerPageOptions={[10, 25, 50, 100]}
-                  pageSize={25}
-                  showToolbar
-                  density="compact"
-                  sortModel={TIME_COL_SORT}
-                  rows={this.state.posts}
-                  columns={this.timeColumns}
-                />
-              </div>
-            </div>
+            <TimeTable
+              rows={this.state.posts}
+              columns={this.timeColumns}
+              props={{
+                rowsPerPageOptions: [10, 25, 50, 100],
+                pageSize: 25,
+              }}
+            />
           </Paper>
         ) : (
           !this.state.loading && (
