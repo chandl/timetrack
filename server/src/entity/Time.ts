@@ -38,4 +38,7 @@ export class Time {
 
   @Column()
   active: boolean;
+
+  @Column()
+  finalized: boolean;
 }

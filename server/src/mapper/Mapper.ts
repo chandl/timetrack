@@ -18,6 +18,7 @@ class Mapper {
     time.endTime = requestTime.endTime;
     time.serviceItem = requestTime.serviceItem;
     time.active = true;
+    time.finalized = false;
 
     if (requestTime.associatedReportId)
       time.associatedReportId = requestTime.associatedReportId;

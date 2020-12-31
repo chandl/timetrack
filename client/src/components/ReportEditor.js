@@ -6,7 +6,6 @@ import StepperModal from "./StepperModal";
 import { Fetch } from "./ManagerComponent";
 import { ReportOverview } from "./ReportOverview";
 import { ReportWeek } from "./ReportWeek";
-import { FinalizeReport } from "./FinalizeReport";
 
 const styles = (theme) => ({
   marginTop: {
@@ -26,6 +25,12 @@ const getReport = async (reportId) => {
       this.setState({ error: err });
     });
 };
+
+const finalizeReport = async (reportId) => {
+  return Fetch("post", `/report/finalize/${reportId}`)
+    .then((res) => res)
+    .catch((err) => this.setState({error: err}));
+}
 
 const ReportEditor = ({ classes, report, onSave, history }) => {
   // const [activeReport, setActiveReport] = React.useState();
@@ -62,7 +67,7 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
         name: "Finalize Report",
         content: <ReportOverview classes={classes} report={report} />,
         validate: () => Promise.resolve(),
-        complete: () => Promise.resolve(),
+        complete: () => finalizeReport(report.id),
         isEnabled: () => true,
       },
     ]);

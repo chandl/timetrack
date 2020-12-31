@@ -39,7 +39,7 @@ export default class TimeService {
   public getTimesByFilter = async (
     timeFilter: TimeFilter
   ): Promise<TimeDto[]> => {
-    const { startDate, endDate, customer, associatedReportId } = {
+    const { startDate, endDate, customer, associatedReportId, finalized } = {
       ...timeFilter,
     };
 
@@ -58,6 +58,7 @@ export default class TimeService {
       filter.associatedReportId = associatedReportId;
     }
     filter.active = true;
+    filter.finalized = finalized === true;
 
     console.log("Getting all times with filter", filter);
 
@@ -81,7 +82,10 @@ export default class TimeService {
     });
 
     if (associatedReport && associatedReport.length == 1) {
-      if (associatedReport[0].status === ReportStatus.COMPLETED) {
+      if (
+        associatedReport[0].status === ReportStatus.COMPLETED ||
+        associatedReport[0].status === ReportStatus.GENERATING
+      ) {
         return Promise.reject(
           new ServiceError({
             code: 409,
@@ -117,6 +121,27 @@ export default class TimeService {
       );
   };
 
+  public finalizeTime = async (
+    timeId: string | number,
+    finalized: boolean
+  ): Promise<void> => {
+    return connection
+      .then(async (conn) => {
+        const existingTime = await conn.manager.findOne(Time, timeId);
+        if (!existingTime) {
+          return Promise.reject(
+            new ServiceError({ code: 404, message: "Time not found" })
+          );
+        }
+
+        existingTime.finalized = finalized;
+
+        await conn.manager.save(existingTime);
+        return Promise.resolve();
+      })
+      .catch((err) => handleErr(err));
+  };
+
   public updateTime = async (
     timeId: string,
     timeBody: any
@@ -127,6 +152,15 @@ export default class TimeService {
         if (!existingTime) {
           return Promise.reject(
             new ServiceError({ code: 404, message: "Time not found" })
+          );
+        }
+
+        if (existingTime.finalized) {
+          return Promise.reject(
+            new ServiceError({
+              code: 409,
+              message: "Cannot update a time that is in a finalized report.",
+            })
           );
         }
 
@@ -147,6 +181,14 @@ export default class TimeService {
         if (!existingTime) {
           return Promise.reject(
             new ServiceError({ code: 404, message: "Time not found" })
+          );
+        }
+        if (existingTime.finalized) {
+          return Promise.reject(
+            new ServiceError({
+              code: 409,
+              message: "Cannot delete a time that is in a finalized report.",
+            })
           );
         }
 
@@ -246,13 +288,14 @@ const validateMergeTimes = (timesToMerge: Time[]): Promise<Time[]> => {
       time.customer.toUpperCase() === expectedCustomer.toUpperCase() &&
       time.serviceItem.toUpperCase() === expectedServiceItem.toUpperCase() &&
       time.billable === expectedBillable &&
-      time.associatedReportId === expectedReport
+      time.associatedReportId === expectedReport &&
+      time.finalized === false
   );
 
   if (validMergeTimes.length != timesToMerge.length) {
     return Promise.reject({
       message:
-        "Could not merge entries: customer, serviceItem, report, and billable must be the same",
+        "Could not merge entries: customer, serviceItem, report, and billable must be the same and time must not be finalized",
       invalid: timesToMerge
         .filter((time) => !validMergeTimes.includes(time))
         .map((t) => t.id),
@@ -272,4 +315,5 @@ interface TimeFilter {
   endDate?: any;
   customer?: any;
   associatedReportId?: any;
+  finalized?: boolean;
 }

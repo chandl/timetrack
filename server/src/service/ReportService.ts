@@ -98,8 +98,9 @@ export default class ReportService {
           existingReport.status = status;
         }
 
-        if (generatedFile) {
-          existingReport.generatedFile = generatedFile;
+        if (generatedFile != null) {
+          existingReport.generatedFile =
+            generatedFile === "" ? null : generatedFile;
         }
 
         return conn.manager
@@ -114,7 +115,7 @@ export default class ReportService {
   public getReportById = async (
     reportId: string,
     timeService: TimeService
-  ): Promise<ReportDto | ServiceError> => {
+  ): Promise<ReportDto> => {
     return connection
       .then(async (conn) => {
         const existingReport = await conn.manager.findOne(Report, reportId);
@@ -181,12 +182,24 @@ export default class ReportService {
 
   public finalizeReport = async (
     reportId: string,
-    reportGenerator: ReportGenerator
+    reportGenerator: ReportGenerator,
+    timeService: TimeService
   ) => {
     await this.updateReport({
       reportId: reportId,
       status: ReportStatus.GENERATING,
     })
+      .then((report) => {
+        // finalize times
+        timeService
+          .getTimesByFilter({ associatedReportId: reportId })
+          .then((associatedTimes) =>
+            associatedTimes.forEach((time) =>
+              timeService.finalizeTime(time.id, true)
+            )
+          );
+        return report;
+      })
       .then((report) => reportGenerator.generateReport(report))
       .then((generatedFile) =>
         this.updateReport({
@@ -194,7 +207,50 @@ export default class ReportService {
           status: ReportStatus.COMPLETED,
           generatedFile: generatedFile,
         })
-      );
+      )
+      .catch((err) => {
+        console.error("Error finalizing report - reverting", err);
+        this.unfinalizeReport(reportId, timeService);
+      });
+  };
+
+  public unfinalizeReport = async (
+    reportId: string,
+    timeService: TimeService
+  ): Promise<void> => {
+    const reversableStatuses = [
+      ReportStatus.GENERATING,
+      ReportStatus.COMPLETED,
+    ];
+    return this.getReportById(reportId, timeService)
+      .then((report) => {
+        if (!reversableStatuses.includes(report.status)) {
+          return Promise.reject(
+            new ServiceError({
+              code: 409,
+              message: "Report is not in a reversable state.",
+            })
+          );
+        }
+      })
+      .then(() =>
+        this.updateReport({
+          reportId: reportId,
+          status: ReportStatus.IN_PROGRESS,
+          generatedFile: "",
+        })
+      )
+      .then(() => {
+        // finalize times
+        timeService
+          .getTimesByFilter({ associatedReportId: reportId, finalized: true })
+          .then((associatedTimes) =>
+            associatedTimes.forEach((time) => {
+              timeService.finalizeTime(time.id, false);
+            })
+          );
+      })
+      .catch((err) => handleErr(err));
   };
 }
 

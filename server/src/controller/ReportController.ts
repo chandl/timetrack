@@ -70,9 +70,28 @@ class ReportController {
 
   public finalizeReport = (req: Request, res: Response) => {
     console.log("Finalizing report with id", req.params.id);
-    this.reportService.finalizeReport(req.params.id, this.reportGenerator);
+    this.reportService.finalizeReport(
+      req.params.id,
+      this.reportGenerator,
+      this.timeService
+    );
 
-    res.status(202).json({ message: "finalizing report" });
+    res.status(202).json({ message: `finalizing report ${req.params.id}` });
+  };
+
+  public unfinalizeReport = (req: Request, res: Response) => {
+    console.log("Un-finalizing report with id", req.params.id);
+    this.reportService
+      .unfinalizeReport(req.params.id, this.timeService)
+      .then(() =>
+        res
+          .status(200)
+          .json({ message: `un-finalized report ${req.params.id}` })
+      )
+      .catch((err) => {
+        console.error("Error un-finalizing report", err);
+        res.status(err.code).json(err);
+      });
   };
 
   public updateReport(req: Request, res: Response) {

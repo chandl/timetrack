@@ -138,6 +138,7 @@ class TimeManager extends Component {
       delete post.associatedReport;
       delete post.associatedReportId;
       delete post.active;
+      delete post.finalized;
       await Fetch("put", `/time/${id}`, post).catch((err) =>
         this.setState({ error: err })
       );

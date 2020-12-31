@@ -77,6 +77,13 @@ class Routes {
         validator.params(validIdParam),
         this.reportController.finalizeReport
       );
+
+    app
+      .route("/report/unfinalize/:id")
+      .post(
+        validator.params(validIdParam),
+        this.reportController.unfinalizeReport
+      );
   }
 }
 export { Routes };

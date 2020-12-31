@@ -14,6 +14,7 @@ import {
   GetApp as DownloadIcon,
   Edit as EditIcon,
   Add as AddIcon,
+  Loop as GeneratingIcon,
 } from "@material-ui/icons";
 import { DataGrid } from "@material-ui/data-grid";
 
@@ -60,6 +61,8 @@ class ReportManager extends Component {
         switch (params.row.status) {
           case "IN_PROGRESS":
             return <Chip label="In Progress" size="small" color="secondary" />;
+          case "GENERATING":
+            return <Chip label="Generating" size="small" />;
           case "COMPLETED":
             return <Chip label="Completed" size="small" color="primary" />;
           default:
@@ -75,48 +78,41 @@ class ReportManager extends Component {
       renderCell: (params) => {
         return (
           <>
+
             <IconButton
               component={Link}
               to={`/report/${params.row.id}`}
               color="inherit"
+              disabled={params.row.status === "COMPLETED"}
             >
               <EditIcon />
             </IconButton>
             <IconButton
               onClick={() => {
-                if (params.row.status === "COMPLETED") {
-                  // terminal state! no deletes
-                  this.setState({
-                    error: { message: "Cannot delete a completed report." },
-                  });
-                } else {
-                  this.setState({
-                    toDelete: params.row,
-                  });
-                }
+                this.setState({
+                  toDelete: params.row,
+                });
               }}
               color="inherit"
+              disabled={params.row.status === "COMPLETED"}
             >
               <DeleteIcon />
             </IconButton>
 
-            <IconButton
+            {params.row.status === "GENERATING" && <IconButton 
+              onClick={() => this.getReports()}
+              color="primary">
+                <GeneratingIcon/>
+              </IconButton>}
+            {params.row.generatedFile && <IconButton
               onClick={() => {
-                if (params.row.generatedFile) {
-                  window.location.href = params.row.generatedFile;
-                } else {
-                  this.setState({
-                    error: {
-                      message:
-                        "Report not available for download. You must complete the report first.",
-                    },
-                  });
-                }
+                window.location.href = params.row.generatedFile;
               }}
-              color={params.row.generatedFile ? "primary" : "secondary"}
+              color="primary"
             >
               <DownloadIcon />
-            </IconButton>
+            </IconButton>}
+            
           </>
         );
       },
@@ -178,8 +174,6 @@ class ReportManager extends Component {
     if (!report && id !== "new") return <Redirect to="/report" />;
 
     return <ReportEditor report={report} onSave={this.saveReport} />;
-    // return this.getReport(report.id)
-    // .then(reportDetail =>);
   };
 
   render() {
