@@ -6,6 +6,7 @@ import { ReportRequest } from "../dto/ReportRequest";
 import { Report } from "../entity/Report";
 import { Time } from "../entity/Time";
 import { Mapper } from "../mapper/Mapper";
+import ReportGenerator from "../service/ReportGeneratorService";
 import ReportService from "../service/ReportService";
 import TimeService from "../service/TimeService";
 
@@ -15,10 +16,12 @@ const mapper = new Mapper();
 class ReportController {
   private reportService: ReportService;
   private timeService: TimeService;
+  private reportGenerator: ReportGenerator;
 
-  constructor({ reportService, timeService }) {
+  constructor({ reportService, timeService, reportGeneratorService }) {
     this.reportService = reportService;
     this.timeService = timeService;
+    this.reportGenerator = reportGeneratorService;
   }
 
   public newReport = (req: Request, res: Response) => {
@@ -63,6 +66,13 @@ class ReportController {
         console.error("Error deleting report", err);
         res.status(err.code).json(err);
       });
+  };
+
+  public finalizeReport = (req: Request, res: Response) => {
+    console.log("Finalizing report with id", req.params.id);
+    this.reportService.finalizeReport(req.params.id, this.reportGenerator);
+
+    res.status(202).json({ message: "finalizing report" });
   };
 
   public updateReport(req: Request, res: Response) {

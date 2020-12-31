@@ -23,6 +23,7 @@ interface CustomerDetail {
 const ReportStatus = Object.freeze({
   IN_PROGRESS: "IN_PROGRESS",
   COMPLETED: "COMPLETED",
+  GENERATING: "GENERATING",
   ON_HOLD: "ON_HOLD",
 });
 

@@ -18,8 +18,13 @@ const timeSchema = Joi.object({
   endTime: Joi.date().optional(),
 });
 
-const timeUpdateSchema = Joi.object({
+const validIdParam = Joi.object({
   id: Joi.number().integer().required(),
+});
+
+const reportCreateSchema = Joi.object({
+  startDate: Joi.date().required(),
+  endDate: Joi.date().required(),
 });
 
 class Routes {
@@ -41,27 +46,37 @@ class Routes {
 
     app
       .route("/time/:id")
-      .get(this.timeController.getTimeById)
+      .get(validator.params(validIdParam), this.timeController.getTimeById)
       .put(
-        validator.params(timeUpdateSchema),
+        validator.params(validIdParam),
         validator.body(timeSchema),
         (req: ValidatedRequest<any>, res) =>
           this.timeController.updateTime(req, res)
       )
-      .delete(this.timeController.deleteTime);
+      .delete(validator.params(validIdParam), this.timeController.deleteTime);
 
     app.route("/time/merge").post(this.timeController.mergeTime);
 
     app
       .route("/report")
-      .post(this.reportController.newReport)
+      .post(validator.body(reportCreateSchema), this.reportController.newReport)
       .get(this.reportController.getReports);
 
     app
       .route("/report/:id")
-      .get(this.reportController.getReportById)
-      .put(this.reportController.updateReport)
-      .delete(this.reportController.deleteReport);
+      .get(validator.params(validIdParam), this.reportController.getReportById)
+      .put(validator.params(validIdParam), this.reportController.updateReport)
+      .delete(
+        validator.params(validIdParam),
+        this.reportController.deleteReport
+      );
+
+    app
+      .route("/report/finalize/:id")
+      .post(
+        validator.params(validIdParam),
+        this.reportController.finalizeReport
+      );
   }
 }
 export { Routes };

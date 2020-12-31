@@ -5,8 +5,8 @@ import { Report } from "../entity/Report";
 import { getDayFromDate, Mapper } from "../mapper/Mapper";
 import { ReportRequest } from "../dto/ReportRequest";
 import TimeService from "./TimeService";
-import { TimeDto } from "../dto/TimeDto";
 import { Between, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import ReportGenerator from "./ReportGeneratorService";
 
 const handleErr = (err) =>
   err instanceof ServiceError
@@ -80,6 +80,37 @@ export default class ReportService {
       .catch((err) => handleErr(err));
   };
 
+  public updateReport = async (
+    updateParams: UpdateReportParams
+  ): Promise<ReportDto> => {
+    const { reportId, status, generatedFile } = { ...updateParams };
+
+    return connection
+      .then(async (conn) => {
+        const existingReport = await conn.manager.findOne(Report, reportId);
+        if (!existingReport) {
+          return Promise.reject(
+            new ServiceError({ code: 404, message: "Report not found" })
+          );
+        }
+
+        if (status) {
+          existingReport.status = status;
+        }
+
+        if (generatedFile) {
+          existingReport.generatedFile = generatedFile;
+        }
+
+        return conn.manager
+          .save(existingReport)
+          .then((entity) =>
+            Promise.resolve(this.mapper.mapReportToDto(entity))
+          );
+      })
+      .catch((err) => handleErr(err));
+  };
+
   public getReportById = async (
     reportId: string,
     timeService: TimeService
@@ -147,8 +178,32 @@ export default class ReportService {
       })
       .catch((err) => handleErr(err));
   };
+
+  public finalizeReport = async (
+    reportId: string,
+    reportGenerator: ReportGenerator
+  ) => {
+    await this.updateReport({
+      reportId: reportId,
+      status: ReportStatus.GENERATING,
+    })
+      .then((report) => reportGenerator.generateReport(report))
+      .then((generatedFile) =>
+        this.updateReport({
+          reportId: reportId,
+          status: ReportStatus.COMPLETED,
+          generatedFile: generatedFile,
+        })
+      );
+  };
 }
 
 interface ReportFilter {
   hasDate?: any; //represents a date that is >=startDate and <=endDate of a report
+}
+
+interface UpdateReportParams {
+  reportId: any;
+  status?: string;
+  generatedFile?: string;
 }
