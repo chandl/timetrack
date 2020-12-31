@@ -57,8 +57,12 @@ export default class TimeService {
     if (associatedReportId) {
       filter.associatedReportId = associatedReportId;
     }
+
+    if (finalized !== undefined) {
+      filter.finalized = finalized;
+    }
+
     filter.active = true;
-    filter.finalized = finalized === true;
 
     console.log("Getting all times with filter", filter);
 

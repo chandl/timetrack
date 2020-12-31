@@ -21,6 +21,7 @@ export const TimeTable = ({ rows, columns, onMerge, props }) => {
     })
       .then((res) => {
         console.log("MERGED:::", res);
+        setSelectedRows([]);
         onMerge();
       })
       .catch((err) => setError(err));
@@ -36,7 +37,7 @@ export const TimeTable = ({ rows, columns, onMerge, props }) => {
       }}
     >
       <div>
-        {selectedRows.length > 1 ? (
+        {selectedRows.length > 1 && (
           <div>
             <Button
               onClick={() => mergeTimes(selectedRows)}
@@ -44,12 +45,6 @@ export const TimeTable = ({ rows, columns, onMerge, props }) => {
               color="primary"
               disableElevation
             >
-              Merge Times
-            </Button>
-          </div>
-        ) : (
-          <div>
-            <Button variant="contained" disabled disableElevation>
               Merge Times
             </Button>
           </div>
@@ -64,7 +59,6 @@ export const TimeTable = ({ rows, columns, onMerge, props }) => {
           sortModel={TIME_COL_SORT}
           rows={rows}
           columns={columns}
-          checkboxSelection
           onSelectionChange={(newSelection) => {
             setSelectedRows(newSelection.rowIds);
           }}

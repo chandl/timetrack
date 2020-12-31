@@ -7,6 +7,7 @@ import { Fetch } from "./ManagerComponent";
 import { ReportOverview } from "./ReportOverview";
 import { ReportWeek } from "./ReportWeek";
 import LoadingBackdrop from "./LoadingBackdrop";
+import ConfirmDialog from "./ConfirmDialog";
 
 const styles = (theme) => ({
   marginTop: {
@@ -34,7 +35,7 @@ const finalizeReport = async (reportId) => {
 };
 
 const ReportEditor = ({ classes, report, onSave, history }) => {
-  // const [activeReport, setActiveReport] = React.useState();
+  const [toFinalize, setToFinalize] = React.useState();
   const [steps, setSteps] = React.useState();
 
   useEffect(() => {
@@ -65,23 +66,51 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
 
     return weeklyReview.concat([
       {
-        name: "Finalize Report",
+        name: "Review Report",
         content: <ReportOverview classes={classes} report={report} />,
         validate: () => Promise.resolve(),
-        complete: () => finalizeReport(report.id),
+        complete: () => Promise.resolve(),
         isEnabled: () => true,
       },
     ]);
   };
 
   return steps ? (
-    <StepperModal
-      classes={classes}
-      history={history}
-      onSave={() => onSave(report)}
-      onClose={() => onSave(report)}
-      steps={steps}
-    />
+    <div>
+      <StepperModal
+        classes={classes}
+        history={history}
+        onSave={() => {
+          if ("COMPLETED" === report.status) {
+            return onSave(report);
+          }
+          return setToFinalize([
+            report,
+            async () =>
+              await new Promise(() => setTimeout(() => onSave(report), 250)),
+          ]);
+        }}
+        onClose={() => onSave(report)}
+        steps={steps}
+      />
+
+      {toFinalize && (
+        <ConfirmDialog
+          title="Finalize Report?"
+          message={`This will permanently finalize this report and generate the time tracker file. You will not be able to make additional changes or add new time after proceeding. Continue?`}
+          onAccept={() => {
+            finalizeReport(toFinalize[0].id);
+            toFinalize[1](); // callback
+            setToFinalize(null);
+          }}
+          onCancel={() => {
+            toFinalize[1](); // callback
+            setToFinalize(null);
+          }}
+          state={toFinalize}
+        />
+      )}
+    </div>
   ) : (
     <LoadingBackdrop />
   );

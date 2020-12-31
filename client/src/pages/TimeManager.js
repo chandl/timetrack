@@ -62,13 +62,24 @@ class TimeManager extends Component {
       flex: 1,
       sortable: false,
     },
-
     {
       field: "billable",
       headerName: "Billable",
-      sortable: false,
+      sortable: true,
       renderCell: (params) => {
         if (params.row.billable) {
+          return <Chip label="Yes" size="small" color="primary" />;
+        } else {
+          return <Chip label="No" size="small" color="secondary" />;
+        }
+      },
+    },
+    {
+      field: "finalized",
+      headerName: "Finalized",
+      sortable: true,
+      renderCell: (params) => {
+        if (params.row.finalized) {
           return <Chip label="Yes" size="small" color="primary" />;
         } else {
           return <Chip label="No" size="small" color="secondary" />;
@@ -86,12 +97,14 @@ class TimeManager extends Component {
             component={Link}
             to={`/time/${params.row.id}`}
             color="inherit"
+            disabled={params.row.finalized}
           >
             <EditIcon />
           </IconButton>
           <IconButton
             onClick={() => this.setState({ toDelete: params.row })}
             color="inherit"
+            disabled={params.row.finalized}
           >
             <DeleteIcon />
           </IconButton>
@@ -195,6 +208,7 @@ class TimeManager extends Component {
               props={{
                 rowsPerPageOptions: [10, 25, 50, 100],
                 pageSize: 25,
+                checkboxSelection: true,
               }}
             />
           </Paper>

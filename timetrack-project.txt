@@ -36,9 +36,10 @@ TODO:
     * Finish 'Finalize report' screen 
         - add button to generate report 
         - show rounded times!
-        - figure out locking logic to prevent updates afterwards??
+    * Add page to review reports after finalized
     * Figure out deployment
     * Testing!!!
+    * Add another step / confirmation before report is generated
 
 Nice to Have:
     * Make a common package.json file for running commands

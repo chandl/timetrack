@@ -69,12 +69,14 @@ export const ReportWeek = ({ week, reload }) => {
             component={Link}
             to={`/time/${params.row.id}`}
             color="inherit"
+            disabled={params.row.finalized}
           >
             <EditIcon />
           </IconButton>
           <IconButton
             onClick={() => setTimeToDelete(params.row)}
             color="inherit"
+            disabled={params.row.finalized}
           >
             <DeleteIcon />
           </IconButton>
@@ -98,6 +100,7 @@ export const ReportWeek = ({ week, reload }) => {
             props={{
               rowsPerPageOptions: [5, 10, 15],
               pageSize: 5,
+              checkboxSelection: true,
             }}
           />
         </div>

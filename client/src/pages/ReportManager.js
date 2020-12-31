@@ -15,6 +15,7 @@ import {
   Edit as EditIcon,
   Add as AddIcon,
   Loop as GeneratingIcon,
+  Visibility as ReadOnlyIcon,
 } from "@material-ui/icons";
 import { DataGrid } from "@material-ui/data-grid";
 
@@ -83,12 +84,13 @@ class ReportManager extends Component {
               component={Link}
               to={`/report/${params.row.id}`}
               color="inherit"
-              disabled={
-                params.row.status === "COMPLETED" ||
-                params.row.status === "GENERATING"
-              }
+              disabled={params.row.status === "GENERATING"}
             >
-              <EditIcon />
+              {params.row.status === "COMPLETED" ? (
+                <ReadOnlyIcon />
+              ) : (
+                <EditIcon />
+              )}
             </IconButton>
             <IconButton
               onClick={() => {

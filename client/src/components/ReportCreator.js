@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import { TextField, withStyles } from "@material-ui/core";
 import { Fetch } from "./ManagerComponent";
 import StepperModal from "./StepperModal";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
 const styles = (theme) => ({
   marginTop: {
@@ -81,14 +82,17 @@ const ReportCreator = ({ classes, report, onSave, history }) => {
       name: "Select Report Date Range",
       content: <DateRangePicker classes={classes} report={report} />,
       validate: () => validateReportDateRange(report),
-      complete: () => createReport(report).then((res) => setActiveReport(res)),
+      complete: () =>
+        createReport(report).then(
+          (res) => (window.location.href = `/report/${res.id}`)
+        ),
     },
-    {
-      name: "Confirm Report",
-      content: <p>{JSON.stringify(activeReport)}</p>,
-      validate: () => Promise.resolve(),
-      complete: () => Promise.resolve(),
-    },
+    // {
+    //   name: "Confirm Report",
+    //   content: <p>{JSON.stringify(activeReport)}</p>,
+    //   validate: () => Promise.resolve(),
+    //   complete: () => Promise.resolve(),
+    // },
   ];
 
   return (
