@@ -153,4 +153,4 @@ const getDayFromDate = (date: Date): string => {
   return date.toISOString().split("T")[0];
 };
 
-export { Mapper };
+export { Mapper, getDayFromDate };

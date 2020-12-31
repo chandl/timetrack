@@ -45,7 +45,7 @@ class ReportController {
 
   public getReports = (req: Request, res: Response) => {
     this.reportService
-      .getAllReports()
+      .getReportsByFilter({})
       .then((reportDtos) => res.status(200).json(reportDtos))
       .catch((err) => {
         console.error("Error getting all reports", err);

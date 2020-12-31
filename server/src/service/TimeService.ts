@@ -4,6 +4,8 @@ import { connection } from "../connection/Connection";
 import { Mapper } from "../mapper/Mapper";
 import ServiceError from "../error/ServiceError";
 import { Between, In, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import ReportService from "./ReportService";
+import { ReportStatus } from "../dto/ReportDto";
 
 const handleErr = (err) =>
   err instanceof ServiceError
@@ -70,8 +72,35 @@ export default class TimeService {
   };
 
   public addTime = async (
-    timeRequest: Time
+    timeRequest: Time,
+    reportService: ReportService
   ): Promise<TimeDto | ServiceError> => {
+    // Search for reports that encompass this time
+    const associatedReport = await reportService.getReportsByFilter({
+      hasDate: timeRequest.day,
+    });
+
+    if (associatedReport && associatedReport.length == 1) {
+      if (associatedReport[0].status === ReportStatus.COMPLETED) {
+        return Promise.reject(
+          new ServiceError({
+            code: 409,
+            message: `A completed report already exists for this time frame. Update the report to In Progress in order to add a new time. Report ID: ${associatedReport[0].id}`,
+          })
+        );
+      }
+
+      timeRequest.associatedReportId = associatedReport[0].id;
+    } else if (associatedReport.length > 1) {
+      return Promise.reject(
+        new ServiceError({
+          code: 500,
+          message:
+            "Mutliple reports found for this time... that shouldn't happen. Let chandler know!!!",
+        })
+      );
+    }
+
     return connection
       .then(async (conn) => {
         return conn.manager

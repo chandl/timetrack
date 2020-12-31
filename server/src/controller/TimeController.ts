@@ -10,7 +10,6 @@ class TimeController {
   private reportService: ReportService;
 
   constructor({ timeService, reportService }) {
-    console.log("TimeController instantiated: ", timeService);
     this.timeService = timeService;
     this.reportService = reportService;
   }
@@ -44,7 +43,7 @@ class TimeController {
     const time = mapper.mapTime(req.body);
     console.info(`Adding new time=${JSON.stringify(time)}`);
     this.timeService
-      .addTime(time)
+      .addTime(time, this.reportService)
       .then((savedTime) => res.status(200).json(savedTime))
       .catch((err) => {
         console.error("Failed to add new time", err);

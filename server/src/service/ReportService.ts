@@ -2,7 +2,7 @@ import { ReportDto, ReportStatus } from "../dto/ReportDto";
 import ServiceError from "../error/ServiceError";
 import { connection } from "../connection/Connection";
 import { Report } from "../entity/Report";
-import { Mapper } from "../mapper/Mapper";
+import { getDayFromDate, Mapper } from "../mapper/Mapper";
 import { ReportRequest } from "../dto/ReportRequest";
 import TimeService from "./TimeService";
 import { TimeDto } from "../dto/TimeDto";
@@ -102,10 +102,23 @@ export default class ReportService {
       .catch((err) => handleErr(err));
   };
 
-  public getAllReports = async (): Promise<ReportDto[] | ServiceError> => {
+  public getReportsByFilter = async (
+    reportFilter: ReportFilter
+  ): Promise<ReportDto[]> => {
+    const { hasDate } = { ...reportFilter };
+
+    const filter: { [key: string]: any } = {};
+    if (hasDate) {
+      const day = getDayFromDate(hasDate);
+      filter.startDate = LessThanOrEqual(day);
+      filter.endDate = MoreThanOrEqual(day);
+    }
+
+    console.info("Getting reports with filter", filter);
+
     return connection.then(async (conn) =>
       conn.manager
-        .find(Report)
+        .find(Report, filter)
         .then((reps) =>
           Promise.resolve(reps.map((rep) => this.mapper.mapReportToDto(rep)))
         )
@@ -134,4 +147,8 @@ export default class ReportService {
       })
       .catch((err) => handleErr(err));
   };
+}
+
+interface ReportFilter {
+  hasDate?: any; //represents a date that is >=startDate and <=endDate of a report
 }
