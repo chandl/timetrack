@@ -9,6 +9,7 @@ import TimeService from "./service/TimeService";
 import ReportService from "./service/ReportService";
 import ReportGeneratorService from "./service/ReportGeneratorService";
 
+const REPORT_DIR = `${process.env.DIR}/reports`;
 class App {
   public app: express.Application;
   public routePrv: Routes;
@@ -25,6 +26,9 @@ class App {
     this.app.use(helmet()); // secure http headers
     this.app.use(cors()); // cors support
     this.app.use(morgan("common")); // logging
+
+    this.app.use("/reports", express.static(REPORT_DIR));
+    this.app.use(express.static(REPORT_DIR));
 
     this.timeService = new TimeService();
     this.reportService = new ReportService();

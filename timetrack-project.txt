@@ -37,11 +37,8 @@ TODO:
         - add button to generate report 
         - show rounded times!
         - figure out locking logic to prevent updates afterwards??
-    * Add server logic so that new entries are auto-added to open report // prevent entries from being added to time period of old report
     * Figure out deployment
     * Testing!!!
 
 Nice to Have:
-    * Remove report PUT endpoint (not needed) and remove client calls 
-    * Break out db logic from controllers into new service classes 
     * Make a common package.json file for running commands

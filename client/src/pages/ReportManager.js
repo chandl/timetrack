@@ -83,7 +83,7 @@ class ReportManager extends Component {
               component={Link}
               to={`/report/${params.row.id}`}
               color="inherit"
-              disabled={params.row.status === "COMPLETED"}
+              disabled={params.row.status === "COMPLETED" || params.row.status === "GENERATING"}
             >
               <EditIcon />
             </IconButton>
@@ -94,7 +94,7 @@ class ReportManager extends Component {
                 });
               }}
               color="inherit"
-              disabled={params.row.status === "COMPLETED"}
+              disabled={params.row.status === "COMPLETED" || params.row.status === "GENERATING"}
             >
               <DeleteIcon />
             </IconButton>
