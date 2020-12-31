@@ -6,6 +6,7 @@ import StepperModal from "./StepperModal";
 import { Fetch } from "./ManagerComponent";
 import { ReportOverview } from "./ReportOverview";
 import { ReportWeek } from "./ReportWeek";
+import LoadingBackdrop from "./LoadingBackdrop";
 
 const styles = (theme) => ({
   marginTop: {
@@ -29,8 +30,8 @@ const getReport = async (reportId) => {
 const finalizeReport = async (reportId) => {
   return Fetch("post", `/report/finalize/${reportId}`)
     .then((res) => res)
-    .catch((err) => this.setState({error: err}));
-}
+    .catch((err) => this.setState({ error: err }));
+};
 
 const ReportEditor = ({ classes, report, onSave, history }) => {
   // const [activeReport, setActiveReport] = React.useState();
@@ -82,7 +83,7 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
       steps={steps}
     />
   ) : (
-    <span>Loading steps...</span>
+    <LoadingBackdrop />
   );
 };
 

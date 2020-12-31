@@ -14,7 +14,6 @@ import { Autocomplete } from "@material-ui/lab";
 
 import { compose } from "recompose";
 import { withRouter } from "react-router-dom";
-// import { Form, Field } from 'react-final-form';
 import { Formik, Form, Field } from "formik";
 
 const styles = (theme) => ({

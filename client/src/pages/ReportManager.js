@@ -24,6 +24,7 @@ import ErrorSnackbar from "../components/ErrorSnackbar";
 import ReportCreator from "../components/ReportCreator";
 import ReportEditor from "../components/ReportEditor";
 import ConfirmDialog from "../components/ConfirmDialog";
+import LoadingBackdrop from "../components/LoadingBackdrop";
 
 const styles = (theme) => ({
   posts: {
@@ -78,12 +79,14 @@ class ReportManager extends Component {
       renderCell: (params) => {
         return (
           <>
-
             <IconButton
               component={Link}
               to={`/report/${params.row.id}`}
               color="inherit"
-              disabled={params.row.status === "COMPLETED" || params.row.status === "GENERATING"}
+              disabled={
+                params.row.status === "COMPLETED" ||
+                params.row.status === "GENERATING"
+              }
             >
               <EditIcon />
             </IconButton>
@@ -94,25 +97,29 @@ class ReportManager extends Component {
                 });
               }}
               color="inherit"
-              disabled={params.row.status === "COMPLETED" || params.row.status === "GENERATING"}
+              disabled={
+                params.row.status === "COMPLETED" ||
+                params.row.status === "GENERATING"
+              }
             >
               <DeleteIcon />
             </IconButton>
 
-            {params.row.status === "GENERATING" && <IconButton 
-              onClick={() => this.getReports()}
-              color="primary">
-                <GeneratingIcon/>
-              </IconButton>}
-            {params.row.generatedFile && <IconButton
-              onClick={() => {
-                window.location.href = params.row.generatedFile;
-              }}
-              color="primary"
-            >
-              <DownloadIcon />
-            </IconButton>}
-            
+            {params.row.status === "GENERATING" && (
+              <IconButton onClick={() => this.getReports()} color="primary">
+                <GeneratingIcon />
+              </IconButton>
+            )}
+            {params.row.generatedFile && (
+              <IconButton
+                onClick={() => {
+                  window.location.href = params.row.generatedFile;
+                }}
+                color="primary"
+              >
+                <DownloadIcon />
+              </IconButton>
+            )}
           </>
         );
       },
@@ -203,6 +210,8 @@ class ReportManager extends Component {
             <Typography variant="subtitle1">No reports to display</Typography>
           )
         )}
+
+        {this.state.loading && <LoadingBackdrop />}
 
         <Fab
           color="secondary"

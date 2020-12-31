@@ -22,6 +22,7 @@ import ErrorSnackbar from "../components/ErrorSnackbar";
 import { Fetch, formatMinutes } from "../components/ManagerComponent";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { TimeTable } from "../components/TimeTable";
+import LoadingBackdrop from "../components/LoadingBackdrop";
 
 const TIME_DEFAULTS = {
   minutes: 0,
@@ -202,6 +203,7 @@ class TimeManager extends Component {
             <Typography variant="subtitle1">No time to display</Typography>
           )
         )}
+        {this.state.loading && <LoadingBackdrop />}
         <Fab
           color="secondary"
           aria-label="add"
