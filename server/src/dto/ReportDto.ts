@@ -13,7 +13,15 @@ interface ReportTimeDetail {
   startDate: string;
   endDate: string;
   customers: CustomerDetail[];
+  formatted: WeekdayInfo[];
 }
+
+type WeekdayInfo = {
+  dayDate: string;
+  dayName: string;
+  totalTime: number;
+  times: TimeDto[];
+};
 
 interface CustomerDetail {
   customer: string;
@@ -27,4 +35,10 @@ const ReportStatus = Object.freeze({
   ON_HOLD: "ON_HOLD",
 });
 
-export { ReportStatus, ReportTimeDetail, CustomerDetail, ReportDto };
+export {
+  ReportStatus,
+  ReportTimeDetail,
+  CustomerDetail,
+  WeekdayInfo,
+  ReportDto,
+};

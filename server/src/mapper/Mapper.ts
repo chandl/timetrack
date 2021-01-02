@@ -1,4 +1,9 @@
-import { ReportDto, ReportTimeDetail, CustomerDetail } from "../dto/ReportDto";
+import {
+  ReportDto,
+  ReportTimeDetail,
+  CustomerDetail,
+  WeekdayInfo,
+} from "../dto/ReportDto";
 import { TimeDto } from "../dto/TimeDto";
 import { Report } from "../entity/Report";
 import { Time } from "../entity/Time";
@@ -34,6 +39,8 @@ class Mapper {
   }
 
   public mapToDto(dao: Time): TimeDto {
+    delete dao.active;
+    delete dao.finalized;
     const mapped: TimeDto = Object.assign({}, dao, {
       day: getDayFromDate(dao.day),
     });
@@ -80,16 +87,67 @@ class Mapper {
       // sort by customer
       const customerDetailsInRange = this.sortTimesByCustomer(timesInRange);
 
+      // format per day
+      const formattedWeek = this.formatWeeklyReport(
+        dateRange.startDate,
+        dateRange.endDate,
+        customerDetailsInRange
+      );
+
       // add to response
       details.push({
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
         customers: customerDetailsInRange,
+        formatted: formattedWeek,
       });
     });
 
     return details;
   }
+
+  private formatWeeklyReport = (
+    startDate: string,
+    endDate: string,
+    customerDetails: CustomerDetail[]
+  ): WeekdayInfo[] => {
+    // Create WeekdayInfo between startDate/endDate
+    const weekdays: WeekdayInfo[] = [];
+    let day = new Date(startDate);
+    const endDay = new Date(endDate);
+    while (day.getUTCDay() <= 5 && day < endDay) {
+      if (day.getUTCDay() >= 1) {
+        weekdays.push({
+          dayDate: getDayFromDate(day),
+          dayName: getWeekday(day.getUTCDay()),
+          totalTime: 0,
+          times: [],
+        });
+      }
+      day.setDate(day.getDate() + 1);
+    }
+
+    let currWeekday = 0;
+    customerDetails.forEach((cust) => {
+      cust.times.forEach((time) => {
+        // go to next day if 8 hours have been logged for one day
+        if (
+          weekdays[currWeekday].totalTime >= 480 &&
+          currWeekday < weekdays.length - 1
+        ) {
+          currWeekday += 1;
+        }
+
+        const roundedMinutes = roundMinutesToNearestFifteen(time.minutes);
+        weekdays[currWeekday].totalTime += roundedMinutes;
+        weekdays[currWeekday].times.push(
+          Object.assign({}, time, { minutes: roundedMinutes })
+        );
+      });
+    });
+
+    return weekdays.filter((day) => day.totalTime > 0);
+  };
 
   private sortTimesByCustomer(times: TimeDto[]): CustomerDetail[] {
     // Map the data to response
@@ -151,5 +209,18 @@ type DateRange = {
 const getDayFromDate = (date: Date): string => {
   return date.toISOString().split("T")[0];
 };
+
+const dayNames = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+const getWeekday = (dayNumber) => dayNames[dayNumber];
+const roundMinutesToNearestFifteen = (min) => Math.ceil(min / 15) * 15;
 
 export { Mapper, getDayFromDate };

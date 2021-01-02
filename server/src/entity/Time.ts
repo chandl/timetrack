@@ -41,7 +41,4 @@ export class Time {
 
   @Column()
   finalized: boolean;
-
-  @Column({ nullable: true }) 
-  reportDay: Date;
 }
