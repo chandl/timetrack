@@ -122,6 +122,14 @@ export const ReportWeek = ({ week, reload }) => {
         Reviewing Week: {week.startDate} - {week.endDate}{" "}
       </Typography>
 
+      <p>
+        Here, you can review the week and make any changes necessary to your
+        tracked time. Time is organized by customer; you can edit, merge, and
+        delete times on each customer's tab. The 'Daily Overview' tab will allow
+        you to preview how times will be split between weekdays and reported in
+        the end.
+      </p>
+
       <div>
         {week.customers.length > 0 ? (
           <div>

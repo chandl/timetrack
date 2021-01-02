@@ -26,6 +26,14 @@ export const ReportOverview = ({ classes, report }) => {
   return (
     <div>
       <Typography variant="h4">Report Overview</Typography>
+      <p>
+        Here is an overview of the time that you tracked between{" "}
+        {report.startDate} and {report.endDate}. You will be able to delete,
+        modify, and merge times for each week in the next sections. If you need
+        to add time, close this report and go to the "Time Manager" tab. Any new
+        times will automatically be added to this report if it is in the
+        report's time range. Feel free to ask for help!
+      </p>
       <div className={classes.card}>
         <ReportCard
           title="General Info"
