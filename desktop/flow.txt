@@ -1,0 +1,14 @@
+new activity 
+date field is selected 
+enter mm/dd/yyyy 
+tab (your name) -> tab (Customer Job)
+enter customer name 
+tab (service item)
+tab(class) -> tab (billable) - spacebar to change to non-billable
+tab(duration) - enter in hh:mm
+tab(notes) - enter notes 
+tab(next button) - enter to select 
+
+
+QuickBooks Pro Timer application (32 bit)
+

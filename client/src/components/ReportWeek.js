@@ -12,6 +12,7 @@ import {
 import ReportCustomerTabs from "./ReportCustomerTabs";
 import ErrorSnackbar from "./ErrorSnackbar";
 import ConfirmDialog from "./ConfirmDialog";
+import { WeeklyTimeList } from "./WeeklyTimeList";
 
 export const ReportWeek = ({ week, reload }) => {
   const [timeToDelete, setTimeToDelete] = React.useState(null);
@@ -87,26 +88,34 @@ export const ReportWeek = ({ week, reload }) => {
 
   // index, content, label
   let index = 0;
-  const customerTabs = week.customers.map((cust) => {
-    return {
-      index: index++,
-      label: cust.customer,
-      content: (
-        <div style={{ width: "100%" }}>
-          <TimeTable
-            rows={cust.times}
-            columns={timeColumns}
-            onMerge={() => reload()}
-            props={{
-              rowsPerPageOptions: [5, 10, 15],
-              pageSize: 5,
-              checkboxSelection: true,
-            }}
-          />
-        </div>
-      ),
-    };
-  });
+  const customerTabs = week.customers
+    .map((cust) => {
+      return {
+        index: index++,
+        label: cust.customer,
+        content: (
+          <div style={{ width: "100%" }}>
+            <TimeTable
+              rows={cust.times}
+              columns={timeColumns}
+              onMerge={() => reload()}
+              props={{
+                rowsPerPageOptions: [5, 10, 15],
+                pageSize: 5,
+                checkboxSelection: true,
+              }}
+            />
+          </div>
+        ),
+      };
+    })
+    .concat([
+      {
+        index: index++,
+        label: "Daily Overview",
+        content: <WeeklyTimeList week={week} />,
+      },
+    ]);
   return (
     <div style={{ width: "100%" }}>
       <Typography variant="h5">

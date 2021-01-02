@@ -80,6 +80,9 @@ export default class TimeService {
     timeRequest: Time,
     reportService: ReportService
   ): Promise<TimeDto | ServiceError> => {
+    timeRequest.active = true;
+    timeRequest.finalized = false;
+
     // Search for reports that encompass this time
     const associatedReport = await reportService.getReportsByFilter({
       hasDate: timeRequest.day,

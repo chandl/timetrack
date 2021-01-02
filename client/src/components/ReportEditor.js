@@ -8,6 +8,7 @@ import { ReportOverview } from "./ReportOverview";
 import { ReportWeek } from "./ReportWeek";
 import LoadingBackdrop from "./LoadingBackdrop";
 import ConfirmDialog from "./ConfirmDialog";
+import { ReportByDay } from "./ReportByDay";
 
 const styles = (theme) => ({
   marginTop: {
@@ -46,6 +47,16 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
   }, [report.id]);
 
   const generateSteps = (report) => {
+    const overview = [
+      {
+        name: "Report Overview",
+        content: <ReportOverview classes={classes} report={report} />,
+        validate: () => Promise.resolve(),
+        complete: () => Promise.resolve(),
+        isEnabled: () => true,
+      },
+    ];
+
     let i = 1;
     const weeklyReview = report.details.map((week) => {
       return {
@@ -64,15 +75,17 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
       };
     });
 
-    return weeklyReview.concat([
+    const reportByDay = [
       {
-        name: "Review Report",
-        content: <ReportOverview classes={classes} report={report} />,
+        name: "Final Review",
+        content: <ReportByDay weeks={report.details} />,
         validate: () => Promise.resolve(),
         complete: () => Promise.resolve(),
         isEnabled: () => true,
       },
-    ]);
+    ];
+
+    return overview.concat(weeklyReview).concat(reportByDay);
   };
 
   return steps ? (

@@ -31,19 +31,25 @@ export const ReportOverview = ({ classes, report }) => {
           title="General Info"
           content={
             <div>
-              <Typography component="p">ID: {report.id}</Typography>
               <Typography component="p">
-                Start Date: {report.startDate}
-              </Typography>
-              <Typography component="p">End Date: {report.endDate}</Typography>
-              <Typography component="p">
-                Weeks: {report.details.length}
+                <b>ID:</b> {report.id}
               </Typography>
               <Typography component="p">
-                Billable Time: {formatMinutes(billableTime)}
+                <b>Start Date:</b> {report.startDate}
               </Typography>
               <Typography component="p">
-                Total Time: {formatMinutes(totalTime)}
+                <b>End Date:</b> {report.endDate}
+              </Typography>
+              <Typography component="p">
+                <b>Weeks:</b> {report.details.length}
+              </Typography>
+
+              <br />
+              <Typography component="p">
+                <b>Billable Time:</b> {formatMinutes(billableTime)}
+              </Typography>
+              <Typography component="p">
+                <b>Total Time:</b> {formatMinutes(totalTime)}
               </Typography>
             </div>
           }
@@ -56,23 +62,26 @@ export const ReportOverview = ({ classes, report }) => {
               content={
                 <div>
                   <Typography component="p">
-                    Start Date: {detail.startDate}
+                    <b>Start Date:</b> {detail.startDate}
                   </Typography>
                   <Typography component="p">
-                    End Date: {detail.endDate}
+                    <b>End Date:</b> {detail.endDate}
                   </Typography>
+                  <br />
                   <Typography component="p">
-                    Customers:{" "}
+                    <b>Customers:</b>{" "}
                     {detail.customers.length > 0
                       ? detail.customers.map((cust) => cust.customer).join(", ")
                       : "N/A"}
                   </Typography>
+                  <br />
                   <Typography component="p">
-                    Billable Time:{" "}
+                    <b>Billable Time:</b>{" "}
                     {formatMinutes(weeklyTimes[week - 2].billable)}
                   </Typography>
                   <Typography component="p">
-                    Total Time: {formatMinutes(weeklyTimes[week - 2].all)}
+                    <b>Total Time:</b>{" "}
+                    {formatMinutes(weeklyTimes[week - 2].all)}
                   </Typography>
                 </div>
               }
