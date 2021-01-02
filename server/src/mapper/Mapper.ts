@@ -115,7 +115,7 @@ class Mapper {
     const weekdays: WeekdayInfo[] = [];
     let day = new Date(startDate);
     const endDay = new Date(endDate);
-    while (day.getUTCDay() <= 5 && day < endDay) {
+    while (day.getUTCDay() <= 5 && day <= endDay) {
       if (day.getUTCDay() >= 1) {
         weekdays.push({
           dayDate: getDayFromDate(day),
@@ -129,21 +129,23 @@ class Mapper {
 
     let currWeekday = 0;
     customerDetails.forEach((cust) => {
-      cust.times.forEach((time) => {
-        // go to next day if 8 hours have been logged for one day
-        if (
-          weekdays[currWeekday].totalTime >= 480 &&
-          currWeekday < weekdays.length - 1
-        ) {
-          currWeekday += 1;
-        }
+      cust.times
+        .sort((t1, t2) => t2.minutes - t1.minutes)
+        .forEach((time) => {
+          // go to next day if 8 hours have been logged for one day
+          if (
+            weekdays[currWeekday].totalTime >= 480 &&
+            currWeekday < weekdays.length - 1
+          ) {
+            currWeekday += 1;
+          }
 
-        const roundedMinutes = roundMinutesToNearestFifteen(time.minutes);
-        weekdays[currWeekday].totalTime += roundedMinutes;
-        weekdays[currWeekday].times.push(
-          Object.assign({}, time, { minutes: roundedMinutes })
-        );
-      });
+          const roundedMinutes = roundMinutesToNearestFifteen(time.minutes);
+          weekdays[currWeekday].totalTime += roundedMinutes;
+          weekdays[currWeekday].times.push(
+            Object.assign({}, time, { minutes: roundedMinutes })
+          );
+        });
     });
 
     return weekdays.filter((day) => day.totalTime > 0);
