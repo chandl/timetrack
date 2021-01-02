@@ -5,8 +5,13 @@ import { Report } from "../entity/Report";
 import { getDayFromDate, Mapper } from "../mapper/Mapper";
 import { ReportRequest } from "../dto/ReportRequest";
 import TimeService from "./TimeService";
-import { Between, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
-import ReportGenerator from "./ReportGeneratorService";
+import { LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import { writeFile, readFileSync } from "fs";
+import { TimeDto } from "../dto/TimeDto";
+
+const REPORT_DIR = `${process.env.DIR}/reports`;
+const REPORT_TEMPLATE = readFileSync(`${REPORT_DIR}/tracktime-template.py`);
+const PLACEHOLDER = "!!ENCODED_DATA_PLACEHOLDER!!";
 
 const handleErr = (err) =>
   err instanceof ServiceError
@@ -182,25 +187,28 @@ export default class ReportService {
 
   public finalizeReport = async (
     reportId: string,
-    reportGenerator: ReportGenerator,
     timeService: TimeService
   ) => {
     await this.updateReport({
       reportId: reportId,
       status: ReportStatus.GENERATING,
     })
-      .then((report) => {
+      .then(async (report) => {
         // finalize times
-        timeService
+        const times = await timeService
           .getTimesByFilter({ associatedReportId: reportId })
-          .then((associatedTimes) =>
+          .then((associatedTimes) => {
             associatedTimes.forEach((time) =>
               timeService.finalizeTime(time.id, true)
-            )
-          );
-        return report;
+            );
+            return associatedTimes;
+          });
+        return {
+          report: report,
+          times: times,
+        };
       })
-      .then((report) => reportGenerator.generateReport(report))
+      .then(({ report, times }) => this.generateReport(report, times))
       .then((generatedFile) =>
         this.updateReport({
           reportId: reportId,
@@ -251,6 +259,43 @@ export default class ReportService {
           );
       })
       .catch((err) => handleErr(err));
+  };
+
+  private generateReport = async (
+    report: ReportDto,
+    times: TimeDto[]
+  ): Promise<string> => {
+    console.log("Generating Report Script for reportId", report.id);
+
+    const reportDetail = this.mapper.mapReportDetail(report, times);
+
+    // flatten times
+    const reportTimes = [];
+    reportDetail.details.forEach((det) =>
+      det.formatted.forEach((fmt) =>
+        fmt.times.forEach((time) => reportTimes.push(time))
+      )
+    );
+
+    const reportFile = {
+      report: {
+        startDate: reportDetail.startDate,
+        endDate: reportDetail.endDate,
+      },
+      times: reportTimes,
+    };
+
+    const body = REPORT_TEMPLATE.toString().replace(
+      PLACEHOLDER,
+      Buffer.from(JSON.stringify(reportFile)).toString("base64")
+    );
+
+    const fileName = `report-${report.startDate}-to-${report.endDate}.py`;
+    const filePath = `${REPORT_DIR}/${fileName}`;
+
+    console.log("Writing report to", filePath);
+    writeFile(filePath, body, () => {});
+    return Promise.resolve(`http://localhost:3000/reports/${fileName}`);
   };
 }
 

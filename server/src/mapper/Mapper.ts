@@ -57,13 +57,12 @@ class Mapper {
     return mapped;
   }
 
-  public mapReportDetail(reportDao: Report, times: TimeDto[]): ReportDto {
-    const dto = this.mapReportToDto(reportDao);
-    dto.details = this.mapTimeDetails(
-      reportDao.startDate,
-      reportDao.endDate,
-      times
-    );
+  public mapReportDetail(
+    report: Report | ReportDto,
+    times: TimeDto[]
+  ): ReportDto {
+    const dto = report instanceof Report ? this.mapReportToDto(report) : report;
+    dto.details = this.mapTimeDetails(report.startDate, report.endDate, times);
     return dto;
   }
 

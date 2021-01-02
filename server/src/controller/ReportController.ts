@@ -6,7 +6,6 @@ import { ReportRequest } from "../dto/ReportRequest";
 import { Report } from "../entity/Report";
 import { Time } from "../entity/Time";
 import { Mapper } from "../mapper/Mapper";
-import ReportGenerator from "../service/ReportGeneratorService";
 import ReportService from "../service/ReportService";
 import TimeService from "../service/TimeService";
 
@@ -16,12 +15,10 @@ const mapper = new Mapper();
 class ReportController {
   private reportService: ReportService;
   private timeService: TimeService;
-  private reportGenerator: ReportGenerator;
 
-  constructor({ reportService, timeService, reportGeneratorService }) {
+  constructor({ reportService, timeService }) {
     this.reportService = reportService;
     this.timeService = timeService;
-    this.reportGenerator = reportGeneratorService;
   }
 
   public newReport = (req: Request, res: Response) => {
@@ -70,11 +67,7 @@ class ReportController {
 
   public finalizeReport = (req: Request, res: Response) => {
     console.log("Finalizing report with id", req.params.id);
-    this.reportService.finalizeReport(
-      req.params.id,
-      this.reportGenerator,
-      this.timeService
-    );
+    this.reportService.finalizeReport(req.params.id, this.timeService);
 
     res.status(202).json({ message: `finalizing report ${req.params.id}` });
   };

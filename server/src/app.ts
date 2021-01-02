@@ -7,7 +7,6 @@ import { Routes } from "./routes/Routes";
 import bodyParser = require("body-parser");
 import TimeService from "./service/TimeService";
 import ReportService from "./service/ReportService";
-import ReportGeneratorService from "./service/ReportGeneratorService";
 
 const REPORT_DIR = `${process.env.DIR}/reports`;
 class App {
@@ -15,7 +14,6 @@ class App {
   public routePrv: Routes;
   private timeService: TimeService;
   private reportService: ReportService;
-  private reportGeneratorService: ReportGeneratorService;
 
   constructor() {
     dotenv.config();
@@ -32,12 +30,10 @@ class App {
 
     this.timeService = new TimeService();
     this.reportService = new ReportService();
-    this.reportGeneratorService = new ReportGeneratorService();
 
     this.routePrv = new Routes({
       timeService: this.timeService,
       reportService: this.reportService,
-      reportGeneratorService: this.reportGeneratorService,
     });
     this.routePrv.routes(this.app);
 
