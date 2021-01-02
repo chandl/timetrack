@@ -6,8 +6,8 @@ export class Time {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  day: Date;
+  @Column("date")
+  day: string;
 
   @Column()
   customer: string;

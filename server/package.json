@@ -27,7 +27,7 @@
   },
   "scripts": {
     "start": "ts-node src/index.ts",
-    "watch": "DIR=$(pwd) ts-node-dev src/index.ts",
+    "watch": "TZ=UTC DIR=$(pwd) ts-node-dev src/index.ts",
     "format": "npx prettier --write ."
   }
 }

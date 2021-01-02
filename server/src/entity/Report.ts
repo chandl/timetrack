@@ -6,11 +6,11 @@ export class Report {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  startDate: Date;
+  @Column("date")
+  startDate: string;
 
-  @Column()
-  endDate: Date;
+  @Column("date")
+  endDate: string;
 
   @Column({ nullable: true })
   generatedFile: string;

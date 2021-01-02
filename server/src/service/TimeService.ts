@@ -1,7 +1,7 @@
 import { TimeDto } from "../dto/TimeDto";
 import { Time } from "../entity/Time";
 import { connection } from "../connection/Connection";
-import { Mapper } from "../mapper/Mapper";
+import { getDayFromDate, Mapper } from "../mapper/Mapper";
 import ServiceError from "../error/ServiceError";
 import { Between, In, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import ReportService from "./ReportService";
@@ -39,9 +39,12 @@ export default class TimeService {
   public getTimesByFilter = async (
     timeFilter: TimeFilter
   ): Promise<TimeDto[]> => {
-    const { startDate, endDate, customer, associatedReportId, finalized } = {
+    let { startDate, endDate, customer, associatedReportId, finalized } = {
       ...timeFilter,
     };
+
+    startDate = startDate ? getDayFromDate(new Date(startDate)) : null;
+    endDate = startDate ? getDayFromDate(new Date(endDate)) : null;
 
     const filter: { [key: string]: any } = {};
     if (startDate && endDate) {
@@ -258,6 +261,9 @@ export default class TimeService {
           conn.manager.save(t);
         });
         const merged = await this.doMergeTimes(times);
+
+        merged.active = true;
+        merged.finalized = false;
 
         return conn.manager
           .save(merged)

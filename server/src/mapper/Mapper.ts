@@ -16,7 +16,7 @@ class Mapper {
 
     time.customer = requestTime.customer;
     time.billable = requestTime.billable;
-    time.day = new Date(requestTime.day);
+    time.day = getDayFromDate(new Date(requestTime.day));
     time.minutes = requestTime.minutes;
     time.notes = requestTime.notes;
     time.startTime = requestTime.startTime;
@@ -40,10 +40,7 @@ class Mapper {
 
   public mapToDto(dao: Time): TimeDto {
     delete dao.active;
-    delete dao.finalized;
-    const mapped: TimeDto = Object.assign({}, dao, {
-      day: getDayFromDate(dao.day),
-    });
+    const mapped: TimeDto = Object.assign({}, dao);
     if (!dao.startTime) delete mapped.startTime;
     if (!dao.endTime) delete mapped.endTime;
     return mapped;
@@ -71,8 +68,8 @@ class Mapper {
   }
 
   private mapTimeDetails(
-    startDate: Date,
-    endDate: Date,
+    startDate: string,
+    endDate: string,
     times: TimeDto[]
   ): ReportTimeDetail[] {
     const reportDateRanges = getReportWeeks(startDate, endDate);
@@ -171,15 +168,18 @@ class Mapper {
   }
 }
 
-const getReportWeeks = (startDate: Date, endDate: Date): DateRange[] => {
+const getReportWeeks = (startDate: string, endDate: string): DateRange[] => {
   const reportWeeks = [];
+
+  const startDayDate = new Date(startDate);
+  const endDayDate = new Date(endDate);
 
   let currStart = new Date(startDate);
   let prevDay = new Date(startDate);
   let currDay = new Date(startDate);
 
-  while (currDay <= endDate) {
-    if (currDay.getDay() === 6 && currDay != startDate) {
+  while (currDay <= endDayDate) {
+    if (currDay.getDay() === 0 && currDay != startDayDate) {
       // sunday - start new week
       reportWeeks.push({
         startDate: getDayFromDate(currStart),

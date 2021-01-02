@@ -1,6 +1,6 @@
 interface ReportRequest {
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
 }
 
 export { ReportRequest };

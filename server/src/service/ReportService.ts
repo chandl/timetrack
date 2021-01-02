@@ -141,7 +141,7 @@ export default class ReportService {
 
     const filter: { [key: string]: any } = {};
     if (hasDate) {
-      const day = getDayFromDate(hasDate);
+      const day = getDayFromDate(new Date(hasDate));
       filter.startDate = LessThanOrEqual(day);
       filter.endDate = MoreThanOrEqual(day);
     }
