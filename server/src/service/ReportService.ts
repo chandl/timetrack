@@ -10,8 +10,7 @@ import { writeFile, readFileSync } from "fs";
 import { TimeDto } from "../dto/TimeDto";
 
 const REPORT_DIR = `${process.env.DIR}/reports`;
-const HOST = process.env.HOSTNAME || "localhost";
-const PORT = process.env.PORT;
+const HOST = process.env.HOSTNAME || "localhost:3000";
 
 const REPORT_TEMPLATE = readFileSync(`${REPORT_DIR}/tracktime-template.py`);
 const PLACEHOLDER = "!!ENCODED_DATA_PLACEHOLDER!!";
@@ -276,7 +275,9 @@ export default class ReportService {
     const reportTimes = [];
     reportDetail.details.forEach((det) =>
       det.formatted.forEach((fmt) =>
-        fmt.times.forEach((time) => reportTimes.push(time))
+        fmt.times.forEach((time) => {
+          if(time.minutes > 0) reportTimes.push(time)
+        })
       )
     );
 
@@ -298,7 +299,7 @@ export default class ReportService {
 
     console.log("Writing report to", filePath);
     writeFile(filePath, body, () => {});
-    return Promise.resolve(`http://${HOST}:${PORT}/reports/${fileName}`);
+    return Promise.resolve(`https://${HOST}/reports/${fileName}`);
   };
 }
 

@@ -1,4 +1,4 @@
-const API = process.env.API || "http://localhost:3000";
+const API = process.env.DEV? "http://localhost:3000" : "https://timetrack.lan.chandl.io";
 
 // returns (response, error)
 const Fetch = async (method, endpoint, body) => {
