@@ -3,6 +3,7 @@ import { ReportController } from "../controller/ReportController";
 import { TimeController } from "../controller/TimeController";
 import * as Joi from "joi";
 import { ValidatedRequest, createValidator } from "express-joi-validation";
+const PUBLIC_DIR = `${process.env.DIR}/public`;
 
 const validator = createValidator({
   passError: true,
@@ -84,6 +85,9 @@ class Routes {
         validator.params(validIdParam),
         this.reportController.unfinalizeReport
       );
+
+    app.route('/track*')
+        .get((req, res) => res.sendFile(PUBLIC_DIR, "index.html"))
   }
 }
 export { Routes };

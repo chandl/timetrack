@@ -15,9 +15,9 @@ services:
     volumes:
       - timetrack_db:/config
     restart: unless-stopped
-  server:
-    image: timetrack-server:latest
-    container_name: timetrack-server
+  timetrack:
+    image: timetrack:latest
+    container_name: timetrack
     links:
       - "mariadb:mariadb"
     environment:
@@ -34,16 +34,6 @@ services:
     restart: unless-stopped
     depends_on: 
       - mariadb
-  client:
-    image: timetrack-client:latest
-    container_name: timetrack-client
-    links:
-      - "server:server"
-    ports:
-      - 3001:3001
-    restart: unless-stopped
-    depends_on:
-      - server
 
   adminer:
     image: adminer

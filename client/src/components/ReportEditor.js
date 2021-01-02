@@ -41,7 +41,6 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
 
   useEffect(() => {
     getReport(report.id).then((rep) => {
-      // setActiveReport(rep);
       setSteps(generateSteps(rep));
     });
   }, [report.id]);

@@ -4,7 +4,6 @@ import { withRouter } from "react-router-dom";
 import { TextField, withStyles } from "@material-ui/core";
 import { Fetch } from "./ManagerComponent";
 import StepperModal from "./StepperModal";
-import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
 const styles = (theme) => ({
   marginTop: {
@@ -75,8 +74,6 @@ const createReport = (report) => {
 };
 
 const ReportCreator = ({ classes, report, onSave, history }) => {
-  const [activeReport, setActiveReport] = React.useState();
-
   const STEPS = [
     {
       name: "Select Report Date Range",

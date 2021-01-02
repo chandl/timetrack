@@ -17,7 +17,7 @@ const styles = (theme) => ({
 });
 
 const App = ({ classes }) => (
-  <Router>
+  <Router basename="/track">
     <Fragment>
       <CssBaseline />
       <AppHeader />

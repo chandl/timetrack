@@ -9,6 +9,8 @@ import TimeService from "./service/TimeService";
 import ReportService from "./service/ReportService";
 
 const REPORT_DIR = `${process.env.DIR}/reports`;
+const PUBLIC_DIR = `${process.env.DIR}/public`;
+
 class App {
   public app: express.Application;
   public routePrv: Routes;
@@ -27,6 +29,8 @@ class App {
 
     this.app.use("/reports", express.static(REPORT_DIR));
     this.app.use(express.static(REPORT_DIR));
+    this.app.use("/track/*", express.static(PUBLIC_DIR));
+    this.app.use(express.static(PUBLIC_DIR));
 
     this.timeService = new TimeService();
     this.reportService = new ReportService();

@@ -5,7 +5,7 @@ COPY ./build/ /usr/src/timetrack
 WORKDIR /usr/src/timetrack
 
 # Install Dependencies
-COPY ./package*.json ./
+COPY ./server/package*.json ./
 RUN npm install
 
 EXPOSE 3000
