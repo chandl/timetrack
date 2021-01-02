@@ -1,0 +1,55 @@
+---
+version: "2.1"
+services:
+  mariadb:
+    image: ghcr.io/linuxserver/mariadb
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=timetrack #optional
+      - MYSQL_USER=user          #optional
+      - MYSQL_PASSWORD=password  #optional
+    volumes:
+      - timetrack_db:/config
+    restart: unless-stopped
+  server:
+    image: timetrack-server:latest
+    container_name: timetrack-server
+    links:
+      - "mariadb:mariadb"
+    environment:
+      - HOSTNAME=timetrack.lan.chandl.io
+      - TYPEORM_HOST=mariadb
+      - TYPEORM_USERNAME=user
+      - TYPEORM_PASSWORD=password
+      - TYPEORM_DATABASE=timetrack
+      - TYPEORM_PORT=3306
+    ports:
+      - 3000:3000
+    volumes:
+      - timetrack_reports:/usr/src/timetrack/reports
+    restart: unless-stopped
+    depends_on: 
+      - mariadb
+  client:
+    image: timetrack-client:latest
+    container_name: timetrack-client
+    links:
+      - "server:server"
+    ports:
+      - 3001:3001
+    restart: unless-stopped
+    depends_on:
+      - server
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+  
+volumes:
+  timetrack_db:
+  timetrack_reports:

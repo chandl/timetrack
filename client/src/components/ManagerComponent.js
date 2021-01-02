@@ -1,4 +1,4 @@
-const API = process.env.REACT_APP_API || "http://localhost:3000";
+const API = process.env.API || "http://localhost:3000";
 
 // returns (response, error)
 const Fetch = async (method, endpoint, body) => {

@@ -1,7 +1,7 @@
 {
   "name": "timetrack",
   "version": "0.0.1",
-  "description": "Awesome project developed with TypeORM.",
+  "description": "timetrack server",
   "devDependencies": {
     "@types/cors": "^2.8.9",
     "@types/express": "^4.17.9",
@@ -26,8 +26,10 @@
     "typeorm": "^0.2.29"
   },
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "watch": "TZ=UTC DIR=$(pwd) ts-node-dev src/index.ts",
-    "format": "npx prettier --write ."
+    "watch": "HOSTNAME=localhost PORT=3000 TZ=UTC DIR=$(pwd) ts-node-dev src/index.ts",
+    "format": "npx prettier --write .",
+    "build": "tsc && cp scripts/start.sh build/ && cp -r reports build",
+    "build:docker": "npm run clean && npm run build && docker build -t timetrack-server:latest .",
+    "clean": "rm -rf build/"
   }
 }
