@@ -32,5 +32,10 @@ const formatMinutes = (n) =>
     ? `0${(n / 60) ^ 0}`.slice(-2) + "h " + ("0" + (n % 60)).slice(-2) + "m"
     : ("0" + (n % 60)).slice(-2) + "m";
 
-const roundMinutesToNearestFifteen = (min) => Math.ceil(min / 15) * 15;
+const roundMinutesToNearestFifteen = (min) => {
+  const roundUp = Math.ceil(min / 15) * 15;
+  const roundDown = Math.floor(min / 15) * 15;
+  return roundUp - min < min - roundDown ? roundUp : roundDown;
+};
+
 export { Fetch, formatMinutes, roundMinutesToNearestFifteen };

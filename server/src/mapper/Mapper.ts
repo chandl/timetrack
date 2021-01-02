@@ -223,6 +223,12 @@ const dayNames = [
 ];
 
 const getWeekday = (dayNumber) => dayNames[dayNumber];
-const roundMinutesToNearestFifteen = (min) => Math.ceil(min / 15) * 15;
+const roundMinutesToNearestFifteen = (min) => {
+  const roundUp = Math.ceil(min / 15) * 15;
+  const roundDown = Math.floor(min / 15) * 15;
+  return roundUp - min < min - roundDown ? roundUp : roundDown;
+};
 
 export { Mapper, getDayFromDate };
+
+// 23 -> 7 away from 30, 8 away from 15
