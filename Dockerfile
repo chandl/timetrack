@@ -9,4 +9,8 @@ COPY ./server/package*.json ./
 RUN npm install
 
 EXPOSE 3000
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=5s \
+    CMD curl -f http://localhost:3000/metrics || exit 1
+
 ENTRYPOINT ./start.sh
