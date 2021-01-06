@@ -86,8 +86,9 @@ class Routes {
         this.reportController.unfinalizeReport
       );
 
-    app.route('/track*')
-        .get((req, res) => res.sendFile(PUBLIC_DIR, "index.html"))
+    app
+      .route("/track*")
+      .get((req, res) => res.sendFile(PUBLIC_DIR, "index.html"));
   }
 }
 export { Routes };

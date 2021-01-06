@@ -3,6 +3,8 @@ import * as cors from "cors";
 import * as helmet from "helmet";
 import * as dotenv from "dotenv";
 import * as morgan from "morgan";
+import * as prom from "express-prom-bundle";
+
 import { Routes } from "./routes/Routes";
 import bodyParser = require("body-parser");
 import TimeService from "./service/TimeService";
@@ -26,6 +28,7 @@ class App {
     this.app.use(helmet()); // secure http headers
     this.app.use(cors()); // cors support
     this.app.use(morgan("common")); // logging
+    this.app.use(prom({ includeMethod: true, includePath: true }));
 
     this.app.use("/reports", express.static(REPORT_DIR));
     this.app.use(express.static(REPORT_DIR));

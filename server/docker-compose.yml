@@ -10,8 +10,8 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - TZ=Etc/UTC
       - MYSQL_DATABASE=timetrack #optional
-      - MYSQL_USER=user          #optional
-      - MYSQL_PASSWORD=password  #optional
+      - MYSQL_USER=user #optional
+      - MYSQL_PASSWORD=password #optional
     ports:
       - 3306:3306
     restart: unless-stopped
