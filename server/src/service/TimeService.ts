@@ -277,13 +277,16 @@ export default class TimeService {
     const mergedTime: Time = this.mapper.mapTime(times[0]);
     if (times[0].associatedReportId)
       mergedTime.associatedReportId = times[0].associatedReportId;
-    mergedTime.notes = `${mergedTime.notes} (${mergedTime.minutes} min)`;
+    mergedTime.notes = `${mergedTime.notes} (${mergedTime.minutes} min), `;
 
     let curr: Time;
     for (let i = 1; i < times.length; i++) {
       curr = times[i];
       mergedTime.minutes += curr.minutes;
-      mergedTime.notes += `\n${curr.notes} (${curr.minutes} min)`;
+      mergedTime.notes += `${curr.notes} (${curr.minutes} min)`;
+      if(i < times.length - 1) {
+        mergedTime.notes += ", ";
+      }
     }
 
     return Promise.resolve(mergedTime);
