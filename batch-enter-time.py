@@ -3,7 +3,8 @@ import csv
 import requests
 from datetime import datetime
 
-NEW_TIME_ENDPOINT="http://localhost:3000/time"
+# NEW_TIME_ENDPOINT="http://localhost:3000/time"
+NEW_TIME_ENDPOINT="https://timetrack.lan.chandl.io/time"
 
 def confirm_choice():
     confirm = input("[p]Proceed or [c]Cancel: ")
@@ -49,17 +50,19 @@ while True:
     # Parse CSV
     args = list(csv.reader([line]))[0]
 
+    minutes = 0 if not args[3].isdigit() else int(args[3])
+
     # create json
     json = {
         'day': date,
         'customer': args[0],
         'serviceItem': args[1],
         'notes': args[2],
-        'minutes': int(args[3]),
+        'minutes': minutes,
         'billable': True
     }
 
-    if args[5] != '':
+    if json['customer'] == "Liaison" or (len(args) > 5 and args[5] != ''):
         json['billable'] = False
 
     contents.append(json)
