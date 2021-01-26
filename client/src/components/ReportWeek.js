@@ -44,9 +44,7 @@ export const ReportWeek = ({ week, reload }) => {
       headerName: "Notes",
       width: 300,
       flex: 1,
-      sortable: false,
     },
-
     {
       field: "billable",
       headerName: "Billable",
@@ -113,7 +111,7 @@ export const ReportWeek = ({ week, reload }) => {
       {
         index: index++,
         label: "Daily Overview",
-        content: <WeeklyTimeList week={week} />,
+        content: <div style={{ maxHeight: 550 }}><WeeklyTimeList week={week} /></div>,
       },
     ]);
   return (

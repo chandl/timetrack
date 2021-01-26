@@ -19,7 +19,7 @@ export const WeeklyTimeList = ({ week }) => {
     .filter((day) => day.totalTime > 0)
     .map((day) => {
       return (
-        <div>
+        <div style={{ overflowY: "scroll" }}>
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="h6">

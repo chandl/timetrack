@@ -27,10 +27,13 @@ const Fetch = async (method, endpoint, body) => {
   }
 };
 
-const formatMinutes = (n) =>
-  n >= 60
-    ? `0${(n / 60) ^ 0}`.slice(-2) + "h " + ("0" + (n % 60)).slice(-2) + "m"
-    : ("0" + (n % 60)).slice(-2) + "m";
+const formatMinutes = (m) => {
+  let h = Math.floor(m / 60);
+  h += (h < 0) ? 1 : 0;
+  let m2 = Math.abs(m % 60);
+  m2 = (m2 < 10) ? '0' + m2 : m2;
+  return  h + 'h ' + m2 + 'm';
+}
 
 const roundMinutesToNearestFifteen = (min) => {
   const roundUp = Math.ceil(min / 15) * 15;
