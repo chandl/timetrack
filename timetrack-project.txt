@@ -13,9 +13,7 @@ Pages:
     2)✓ Let user Combine similar entries, merge notes and time
     3)✓ Round all times to nearest 15 minutes. If round down to 0, ask if it should be rounded up
     4)✓ Split all the entries into N days (N = number of business days in pay period) - so that each day is ~ 8 hrs 
-    5) Create intuit IIF file with these entries to be imported into QuickBooks Pro or Time Tracker 
 * View Reports
-    * webpage report with option to download quickbooks pro timer file 
     *✓ view history of created reports 
 
 
@@ -23,23 +21,3 @@ Requirements:
 * ✓Original time tracking should be preserved 
 * ✓Should be able to start/stop editing reports on the fly 
 * ✓Existing reports should be saved for future use 
-
-Need: 
-* Example time tracking file 
-
-Maybe:
-* Auto-import spreadsheet into system?
-
-
-TODO: 
-    * Implement report generation logic 
-    * Finish 'Finalize report' screen 
-        - add button to generate report 
-        - show rounded times!
-    * Add page to review reports after finalized
-    * Figure out deployment
-    * Testing!!!
-    * Add another step / confirmation before report is generated
-
-Nice to Have:
-    * Make a common package.json file for running commands

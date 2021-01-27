@@ -1,0 +1,17 @@
+Features:
+* After merging times, show an edit window where user can update the notes.
+* Enforce maximum notes size. (80 characters) ** check before creating report??
+* Increase the default page size to 25 on report week.
+* Add db backup logic (every 15 minutes?)
+* Add web UI to allow bulk import of times from CSV.
+* Add logic to un-merge entries (not as important)
+
+BUGS: 
+* When creating a report, each week, companies are sorted by number of entries. 
+    If many entries are merged for a company, and then that company has <= entries 
+    of one above it in the list, the list will update and user will lose their place. 
+* You can't properly sort by time in the weekly tables
+
+
+
+POSTS: daily social feed check; replying to comments & questions & questions & &
