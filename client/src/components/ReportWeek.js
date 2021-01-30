@@ -38,6 +38,7 @@ export const ReportWeek = ({ week, reload }) => {
       headerName: "Rounded",
       valueFormatter: (params) =>
         formatMinutes(roundMinutesToNearestFifteen(params.row.minutes)),
+      sortComparator: (v1, v2, a, b) => a.row.minutes - b.row.minutes
     },
     {
       field: "notes",
@@ -87,6 +88,10 @@ export const ReportWeek = ({ week, reload }) => {
   // index, content, label
   let index = 0;
   const customerTabs = week.customers
+    .sort((a, b) => {
+      // Always sort customer names in ascending alphabetic order
+      return a.customer < b.customer? -1 : 1;
+    })
     .map((cust) => {
       return {
         index: index++,
@@ -98,8 +103,8 @@ export const ReportWeek = ({ week, reload }) => {
               columns={timeColumns}
               onMerge={() => reload()}
               props={{
-                rowsPerPageOptions: [5, 10, 15],
-                pageSize: 5,
+                rowsPerPageOptions: [5, 15, 25, 50, 100],
+                pageSize: 25,
                 checkboxSelection: true,
               }}
             />

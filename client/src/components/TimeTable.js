@@ -20,7 +20,7 @@ export const TimeTable = ({ rows, columns, onMerge, props }) => {
       toMerge: timeIdList,
     })
       .then((res) => {
-        console.log("MERGED:::", res);
+        console.log("Merged Time:::", res);
         setSelectedRows([]);
         onMerge();
       })

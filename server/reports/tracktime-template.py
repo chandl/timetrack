@@ -9,7 +9,7 @@ RAW_DATA = "!!ENCODED_DATA_PLACEHOLDER!!"
 
 def enter_time(jsonTime):
     # Day 
-    day = datetime.datetime.strptime(jsonTime["day"], "%Y-%m-%d").strftime("%d/%m/%Y")
+    day = datetime.datetime.strptime(jsonTime["day"], "%Y-%m-%d").strftime("%m/%d/%Y")
     pag.typewrite(day)
     pag.typewrite("\t\t") # tab(your name) -> tab(Customer Job)
     

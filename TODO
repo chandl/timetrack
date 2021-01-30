@@ -5,13 +5,8 @@ Features:
 * Add db backup logic (every 15 minutes?)
 * Add web UI to allow bulk import of times from CSV.
 * Add logic to un-merge entries (not as important)
+* Smart merge (suggest merging items that have similar notes)
+
+* Create an account system so I can test on 'prod'
 
 BUGS: 
-* When creating a report, each week, companies are sorted by number of entries. 
-    If many entries are merged for a company, and then that company has <= entries 
-    of one above it in the list, the list will update and user will lose their place. 
-* You can't properly sort by time in the weekly tables
-
-
-
-POSTS: daily social feed check; replying to comments & questions & questions & &

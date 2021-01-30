@@ -20,7 +20,8 @@ const styles = (theme) => ({
     justifyContent: "center",
   },
   modalCard: {
-    width: "90%",
+    height: "95%",
+    width: "95%",
     // maxWidth: 500,
   },
   modalCardContent: {
