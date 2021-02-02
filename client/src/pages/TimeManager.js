@@ -142,8 +142,6 @@ class TimeManager extends Component {
   }
 
   savePost = async (post) => {
-    console.log("SAVING POST:::", post);
-
     if (post.id) {
       const id = post.id;
 

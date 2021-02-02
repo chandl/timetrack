@@ -1,9 +1,7 @@
 Features:
-* After merging times, show an edit window where user can update the notes.
 * Enforce maximum notes size. (80 characters) ** check before creating report??
-* Increase the default page size to 25 on report week.
 * Add db backup logic (every 15 minutes?)
-* Add web UI to allow bulk import of times from CSV.
+* Add web UI to allow bulk import of times from CSV. -- low prio - script does this now
 * Add logic to un-merge entries (not as important)
 * Smart merge (suggest merging items that have similar notes)
 

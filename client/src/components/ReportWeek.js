@@ -13,16 +13,34 @@ import ReportCustomerTabs from "./ReportCustomerTabs";
 import ErrorSnackbar from "./ErrorSnackbar";
 import ConfirmDialog from "./ConfirmDialog";
 import { WeeklyTimeList } from "./WeeklyTimeList";
+import TimeEditor from "./TimeEditor";
 
 export const ReportWeek = ({ week, reload }) => {
   const [timeToDelete, setTimeToDelete] = React.useState(null);
   const [error, setError] = React.useState(null);
+  const [timeToEdit, setTimeToEdit] = React.useState(null);
 
   const deleteTime = async (time) => {
     await Fetch("delete", `/time/${time.id}`)
       .then(() => reload())
       .catch((err) => setError(err));
   };
+
+  const saveTime = async (time) => {
+      const id = time.id;
+
+      // Remove unneeded info from post
+      delete time.id;
+      delete time.associatedReport;
+      delete time.associatedReportId;
+      delete time.active;
+      delete time.finalized;
+      await Fetch("put", `/time/${id}`, time).catch((err) => setError(err));
+      setTimeToEdit(null);
+
+      reload();
+  }
+
 
   const timeColumns = [
     { field: "day", headerName: "Date", width: 110 },
@@ -66,8 +84,9 @@ export const ReportWeek = ({ week, reload }) => {
       renderCell: (params) => (
         <>
           <IconButton
-            component={Link}
-            to={`/time/${params.row.id}`}
+            // component={Link}
+            // to={`/time/${params.row.id}`}
+            onClick={() => setTimeToEdit(params.row)}
             color="inherit"
             disabled={params.row.finalized}
           >
@@ -85,6 +104,7 @@ export const ReportWeek = ({ week, reload }) => {
     },
   ];
 
+
   // index, content, label
   let index = 0;
   const customerTabs = week.customers
@@ -101,7 +121,10 @@ export const ReportWeek = ({ week, reload }) => {
             <TimeTable
               rows={cust.times}
               columns={timeColumns}
-              onMerge={() => reload()}
+              onMerge={(merged) => {
+                reload();
+                setTimeToEdit(merged)
+              }}
               props={{
                 rowsPerPageOptions: [5, 15, 25, 50, 100],
                 pageSize: 25,
@@ -160,6 +183,16 @@ export const ReportWeek = ({ week, reload }) => {
       )}
       {error && (
         <ErrorSnackbar onClose={() => setError(null)} message={error} />
+      )}
+      {timeToEdit && (
+          <TimeEditor
+          post={timeToEdit}
+          customers={[]}
+          serviceItems={[]}
+          onSave={saveTime}
+          lockedDown={true}
+          onCancel={() => setTimeToEdit(null)}
+        />
       )}
     </div>
   );

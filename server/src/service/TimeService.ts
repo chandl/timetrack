@@ -305,23 +305,14 @@ const validateMergeTimes = (timesToMerge: Time[]): Promise<Time[]> => {
       time.serviceItem.toUpperCase() === expectedServiceItem.toUpperCase() &&
       time.billable === expectedBillable &&
       time.associatedReportId === expectedReport &&
-      time.finalized === false
+      time.finalized === false &&
+      time.active == true
   );
 
   if (validMergeTimes.length != timesToMerge.length) {
-    return Promise.reject({
-      message:
-        "Could not merge entries: customer, serviceItem, report, and billable must be the same and time must not be finalized",
-      invalid: timesToMerge
-        .filter((time) => !validMergeTimes.includes(time))
-        .map((t) => t.id),
-      expected: {
-        customer: expectedCustomer,
-        serviceItem: expectedServiceItem,
-        billable: expectedBillable,
-        associatedReport: expectedReport,
-      },
-    });
+    throw "Could not merge entries: customer, serviceItem, report, and billable must be the same, time must not be finalized and must be active. invalid times:" + timesToMerge
+      .filter((time) => !validMergeTimes.includes(time))
+      .map((t) => t.id); 
   }
   return Promise.resolve(timesToMerge);
 };

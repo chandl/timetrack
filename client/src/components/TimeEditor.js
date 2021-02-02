@@ -11,6 +11,7 @@ import {
   Switch,
 } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
+import ErrorSnackbar from "./ErrorSnackbar";
 
 import { compose } from "recompose";
 import { withRouter } from "react-router-dom";
@@ -35,6 +36,7 @@ const styles = (theme) => ({
   },
 });
 
+
 const TimeEditor = ({
   classes,
   post,
@@ -42,17 +44,42 @@ const TimeEditor = ({
   serviceItems,
   onSave,
   history,
+  lockedDown,
+  onCancel
 }) => {
-  return (
-    <Formik initialValues={{ ...post }} onSubmit={(data) => onSave(data)}>
+  const [error, setError] = React.useState(null);
+
+  const onClose = () => {
+    if(onCancel) {
+      onCancel();
+    } else {
+      history.goBack();
+    }
+  }
+
+  let charCount = post.notes.length;
+  const setNotesLenError = () => {
+    setError(`Notes must be 80 characters or less. (${charCount}/80)`);
+  }
+
+  return <div>(
+    <Formik initialValues={{ ...post }} onSubmit={(data) => {
+      if(charCount <= 80) {
+        onSave(data);  
+      } else {
+        setNotesLenError();
+      }
+    }}>
       {({ setFieldValue, values, handleChange }) => (
-        <Modal className={classes.modal} onClose={() => history.goBack()} open>
+        <Modal className={classes.modal} onClose={() => onClose()} open>
           <Card className={classes.modalCard}>
             <Form>
               <CardContent className={classes.modalCardContent}>
                 <Autocomplete
                   id="customer"
                   type="text"
+                  required={!lockedDown}
+                  disabled={lockedDown}
                   onChange={(e, value) => setFieldValue("customer", value)}
                   defaultValue={values.customer}
                   freeSolo
@@ -70,7 +97,8 @@ const TimeEditor = ({
 
                 <Autocomplete
                   id="serviceItem"
-                  required
+                  required={!lockedDown}
+                  disabled={lockedDown}
                   type="text"
                   onChange={(e, value) => setFieldValue("serviceItem", value)}
                   defaultValue={values.serviceItem}
@@ -97,11 +125,18 @@ const TimeEditor = ({
                   required
                   id="notes"
                   name="notes"
-                  label="Notes"
+                  label={`Notes (${charCount}/80)`}
                   defaultValue={values.notes}
                   multiline
                   rows={4}
                   onChange={handleChange}
+                  validate={(value) => {
+                    const len = value.length
+                    charCount = value.length;
+                    if(len > 80) {
+                      setNotesLenError();
+                    }
+                  }}
                 />
 
                 <Field
@@ -140,16 +175,23 @@ const TimeEditor = ({
                 <Button size="small" color="primary" type="submit">
                   Save
                 </Button>
-                <Button size="small" onClick={() => history.goBack()}>
+                <Button size="small" onClick={() => {
+                  onClose()
+                }}>
                   Cancel
                 </Button>
               </CardActions>
             </Form>
+            {error && (
+              <ErrorSnackbar onClose={() => setError(null)} message={error} />
+            )}
           </Card>
         </Modal>
       )}
     </Formik>
-  );
+  )
+  
+  </div>;
 };
 
 export default compose(withRouter, withStyles(styles))(TimeEditor);
