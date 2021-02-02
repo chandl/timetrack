@@ -2,6 +2,7 @@
 import csv
 import requests
 from datetime import datetime
+import argparse
 
 # NEW_TIME_ENDPOINT="http://localhost:3000/time"
 NEW_TIME_ENDPOINT="https://timetrack.lan.chandl.io/time"
@@ -28,25 +29,12 @@ def get_date():
         return get_date()
     return date
 
-print("Batch Time Enter Script")
-print("* Copy/Paste CSV of entries, one day at a time.")
-print("* FORMAT: customer,serviceItem,comment,minutes,[empty],'nonbillable'")
+parser = argparse.ArgumentParser()
+parser.add_argument("-d", "--date", help="if entering one day, enter yyyy-mm-dd format date of the day")
+parser.add_argument("-f", "--file", help="if entering an entire file with date headers, use this")
+args = parser.parse_args()
 
-date = get_date()
-print("Selected Date: {}".format(date))
-
-
-print("Paste the timetrack CSV. Press Enter a couple times after pasting to save.")
-contents = []
-while True:
-    try:
-        line = input()
-        if line == '':
-            break
-        elif line[0] == ',':
-            continue
-    except EOFError:
-        break
+def parse_line(date, line):
     # Parse CSV
     args = list(csv.reader([line]))[0]
 
@@ -62,25 +50,101 @@ while True:
         'billable': True
     }
 
-    if json['customer'] == "Liaison" or (len(args) > 5 and args[5] != ''):
+    if json['customer'] == "Liaison" or (len(args) > 5 and args[5] == 'N'):
         json['billable'] = False
 
-    contents.append(json)
+    return json
 
-print("==========\nInput Data: {}\n==========\n".format(contents))
+def manual_entry():
+    if not args.date:
+        date = get_date()
+    else:
+        if not validate(args.date):
+            print("***Invalid date supplied via command line")
+            exit(-1)
+        date = args.date 
 
-print("Does this look correct?")
-if not confirm_choice():
-    exit()
+    print("Selected Date: {}".format(date))
 
-curr = 1
-total = len(contents)
-for json in contents:
-    print("\n*** Sending Time {} of {}...".format(curr, total))
-    print(f"Sending Data to {NEW_TIME_ENDPOINT}; data = {json}")
-    res = requests.post(NEW_TIME_ENDPOINT, data = json)
-    if res.status_code is not requests.codes.ok:
-        print("Failed to send Time; status_code={}; res={}".format(res.status_code, res.text))
-        exit()
-    print(f"Successfully sent; res={res.text}")
-    curr += 1
+    print("Batch Time Enter Script")
+    print("* Copy/Paste CSV of entries, one day at a time.")
+    print("* FORMAT: customer,serviceItem,comment,minutes,[empty],'nonbillable'")
+
+    print("Paste the timetrack CSV. Press Enter a couple times after pasting to save.")
+    contents = []
+    while True:
+        try:
+            line = input()
+            if line == '':
+                break
+            elif line[0] == ',':
+                continue
+        except EOFError:
+            break
+       
+        json = parse_line(date, line)
+        contents.append(json)
+    return contents
+
+def parse_file(file_name):
+    f = open(file_name, "r")
+    lines = f.readlines()
+    days = []
+
+    curr_date = None
+    curr_content = []
+
+    for line in lines:
+        if line[0] == ',':
+            continue
+        args = list(csv.reader([line]))[0]
+
+        # new day!
+        if(validate(args[0])):
+            if curr_date is not None:
+                days.append(curr_content)
+                curr_content = []
+            curr_date = args[0]
+            continue
+        
+        if not curr_date:
+            print("file messed up - couldn't figure out date")
+            exit(-1)
+
+        content = parse_line(curr_date, line)
+        curr_content.append(content)
+
+    days.append(curr_content)
+    return days
+
+
+def verify_and_send(contents):
+    print("==========\nInput Data: {}\n==========\n".format(contents))
+
+    print("Does this look correct?")
+    if not confirm_choice():
+        return
+
+    curr = 1
+    total = len(contents)
+    for json in contents:
+        print("\n*** Sending Time {} of {}...".format(curr, total))
+        print(f"Sending Data to {NEW_TIME_ENDPOINT}; data = {json}")
+        res = requests.post(NEW_TIME_ENDPOINT, data = json)
+        if res.status_code is not requests.codes.ok:
+            print("Failed to send Time; status_code={}; res={}".format(res.status_code, res.text))
+            exit()
+        print(f"Successfully sent; res={res.text}")
+        curr += 1
+
+
+if not args.file:
+    contents = manual_entry()
+    verify_and_send(contents)
+else:
+    days = parse_file(args.file)
+    for content_day in days:
+        verify_and_send(content_day)
+
+
+
