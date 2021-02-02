@@ -97,7 +97,7 @@ export const ReportWeek = ({ week, reload }) => {
         index: index++,
         label: cust.customer,
         content: (
-          <div style={{ width: "100%" }}>
+          <div style={{ width: "100%", height: "65vh" }}>
             <TimeTable
               rows={cust.times}
               columns={timeColumns}
@@ -116,7 +116,7 @@ export const ReportWeek = ({ week, reload }) => {
       {
         index: index++,
         label: "Daily Overview",
-        content: <div style={{ maxHeight: 550 }}><WeeklyTimeList week={week} /></div>,
+        content: <div style={{ height: "65vh" }}><WeeklyTimeList week={week} /></div>,
       },
     ]);
   return (

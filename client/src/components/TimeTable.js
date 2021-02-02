@@ -34,6 +34,7 @@ export const TimeTable = ({ rows, columns, onMerge, props }) => {
         alignContent: "center",
         flexDirection: "column",
         justifyContent: "flex-end",
+        // height: 500
       }}
     >
       <div>
@@ -51,7 +52,7 @@ export const TimeTable = ({ rows, columns, onMerge, props }) => {
         )}
       </div>
 
-      <div style={{ flexGrow: 1 }}>
+      <div style={{ alignItems: "stretch"}}>
         <DataGrid
           autoHeight
           showToolbar
