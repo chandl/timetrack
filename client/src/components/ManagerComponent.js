@@ -1,4 +1,9 @@
-const API = process.env.DEV? "http://localhost:3000" : "https://timetrack.lan.chandl.io";
+const API =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3000"
+    : "https://timetrack.lan.chandl.io";
+console.log("API Endpoint:", API);
 
 // returns (response, error)
 const Fetch = async (method, endpoint, body) => {
@@ -29,11 +34,11 @@ const Fetch = async (method, endpoint, body) => {
 
 const formatMinutes = (m) => {
   let h = Math.floor(m / 60);
-  h += (h < 0) ? 1 : 0;
+  h += h < 0 ? 1 : 0;
   let m2 = Math.abs(m % 60);
-  m2 = (m2 < 10) ? '0' + m2 : m2;
-  return  h + 'h ' + m2 + 'm';
-}
+  m2 = m2 < 10 ? "0" + m2 : m2;
+  return h + "h " + m2 + "m";
+};
 
 const roundMinutesToNearestFifteen = (min) => {
   const roundUp = Math.ceil(min / 15) * 15;

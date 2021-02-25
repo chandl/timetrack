@@ -13,11 +13,13 @@ import {
   Delete as DeleteIcon,
   Add as AddIcon,
   Edit as EditIcon,
+  ListAlt as ListIcon,
 } from "@material-ui/icons";
 import { find } from "lodash";
 import { compose } from "recompose";
 
 import TimeEditor from "../components/TimeEditor";
+import BulkTimeEditor from "../components/bulk/BulkTimeEditor";
 import ErrorSnackbar from "../components/ErrorSnackbar";
 import { Fetch, formatMinutes } from "../components/ManagerComponent";
 import ConfirmDialog from "../components/ConfirmDialog";
@@ -37,6 +39,16 @@ const styles = (theme) => ({
   fab: {
     position: "absolute",
     bottom: theme.spacing(3),
+    right: theme.spacing(3),
+    [theme.breakpoints.down("xs")]: {
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+  },
+
+  fab2: {
+    position: "absolute",
+    bottom: theme.spacing(12),
     right: theme.spacing(3),
     [theme.breakpoints.down("xs")]: {
       bottom: theme.spacing(2),
@@ -178,6 +190,13 @@ class TimeManager extends Component {
     if (this.state.loading) return null;
     let post = find(this.state.posts, { id: Number(id) });
 
+    console.log("ID:::::", id);
+
+    if (id === "bulk") return <BulkTimeEditor onSave={() => {
+      this.props.history.goBack();
+      this.getPosts();
+    }} />;
+
     if (!post && id !== "new") return <Redirect to="/time" />;
 
     if (id === "new") post = Object.assign({}, TIME_DEFAULTS);
@@ -199,6 +218,7 @@ class TimeManager extends Component {
         <Typography variant="h4">Time Manager</Typography>
         {this.state.posts.length > 0 ? (
           <Paper elevation={1} className={classes.posts}>
+            {console.log("CHANDLER>>SKLJDFLKJSKLDJFL", this.state.posts)}
             <TimeTable
               rows={this.state.posts}
               columns={this.timeColumns}
@@ -224,6 +244,16 @@ class TimeManager extends Component {
           to="/time/new"
         >
           <AddIcon />
+        </Fab>
+
+        <Fab
+          color="primary"
+          aria-label="add"
+          className={classes.fab2}
+          component={Link}
+          to="/time/bulk"
+        >
+          <ListIcon />
         </Fab>
         <Route exact path="/time/:id" render={this.renderPostEditor} />
         {this.state.error && (

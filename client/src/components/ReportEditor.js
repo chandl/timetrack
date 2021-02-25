@@ -62,12 +62,12 @@ const ReportEditor = ({ classes, report, onSave, history }) => {
         name: `Review Week ${i++}`,
         content: (
           <div style={{ overflowY: "scroll" }}>
-          <ReportWeek
-            week={week}
-            reload={() =>
-              getReport(report.id).then((rep) => setSteps(generateSteps(rep)))
-            }
-          />
+            <ReportWeek
+              week={week}
+              reload={() =>
+                getReport(report.id).then((rep) => setSteps(generateSteps(rep)))
+              }
+            />
           </div>
         ),
         validate: () => Promise.resolve(),

@@ -52,7 +52,7 @@ export const TimeTable = ({ rows, columns, onMerge, props }) => {
         )}
       </div>
 
-      <div style={{ alignItems: "stretch"}}>
+      <div style={{ alignItems: "stretch" }}>
         <DataGrid
           autoHeight
           showToolbar

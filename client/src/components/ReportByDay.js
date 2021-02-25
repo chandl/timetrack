@@ -11,7 +11,11 @@ export const ReportByDay = ({ weeks }) => {
     return {
       index: index++,
       label: `Week ${index} (${startDay} - ${endDay})`,
-      content: <div style={{ height: "65vh" , overflowY: "scroll"}}><WeeklyTimeList week={week} /></div>,
+      content: (
+        <div style={{ height: "65vh", overflowY: "scroll" }}>
+          <WeeklyTimeList week={week} />
+        </div>
+      ),
     };
   });
 

@@ -27,20 +27,19 @@ export const ReportWeek = ({ week, reload }) => {
   };
 
   const saveTime = async (time) => {
-      const id = time.id;
+    const id = time.id;
 
-      // Remove unneeded info from post
-      delete time.id;
-      delete time.associatedReport;
-      delete time.associatedReportId;
-      delete time.active;
-      delete time.finalized;
-      await Fetch("put", `/time/${id}`, time).catch((err) => setError(err));
-      setTimeToEdit(null);
+    // Remove unneeded info from post
+    delete time.id;
+    delete time.associatedReport;
+    delete time.associatedReportId;
+    delete time.active;
+    delete time.finalized;
+    await Fetch("put", `/time/${id}`, time).catch((err) => setError(err));
+    setTimeToEdit(null);
 
-      reload();
-  }
-
+    reload();
+  };
 
   const timeColumns = [
     { field: "day", headerName: "Date", width: 110 },
@@ -56,7 +55,7 @@ export const ReportWeek = ({ week, reload }) => {
       headerName: "Rounded",
       valueFormatter: (params) =>
         formatMinutes(roundMinutesToNearestFifteen(params.row.minutes)),
-      sortComparator: (v1, v2, a, b) => a.row.minutes - b.row.minutes
+      sortComparator: (v1, v2, a, b) => a.row.minutes - b.row.minutes,
     },
     {
       field: "notes",
@@ -104,13 +103,12 @@ export const ReportWeek = ({ week, reload }) => {
     },
   ];
 
-
   // index, content, label
   let index = 0;
   const customerTabs = week.customers
     .sort((a, b) => {
       // Always sort customer names in ascending alphabetic order
-      return a.customer < b.customer? -1 : 1;
+      return a.customer < b.customer ? -1 : 1;
     })
     .map((cust) => {
       return {
@@ -123,7 +121,7 @@ export const ReportWeek = ({ week, reload }) => {
               columns={timeColumns}
               onMerge={(merged) => {
                 reload();
-                setTimeToEdit(merged)
+                setTimeToEdit(merged);
               }}
               props={{
                 rowsPerPageOptions: [5, 15, 25, 50, 100],
@@ -139,7 +137,11 @@ export const ReportWeek = ({ week, reload }) => {
       {
         index: index++,
         label: "Daily Overview",
-        content: <div style={{ height: "65vh" }}><WeeklyTimeList week={week} /></div>,
+        content: (
+          <div style={{ height: "65vh" }}>
+            <WeeklyTimeList week={week} />
+          </div>
+        ),
       },
     ]);
   return (
@@ -185,7 +187,7 @@ export const ReportWeek = ({ week, reload }) => {
         <ErrorSnackbar onClose={() => setError(null)} message={error} />
       )}
       {timeToEdit && (
-          <TimeEditor
+        <TimeEditor
           post={timeToEdit}
           customers={[]}
           serviceItems={[]}

@@ -23,6 +23,9 @@ const AppHeader = ({ classes }) => (
       <Button color="inherit" component={Link} to="/">
         Home
       </Button>
+      {/* <Button color="inherit" component={Link} to="/bulk">
+        Bulk-Add Time
+      </Button> */}
       <Button color="inherit" component={Link} to="/time">
         Time Manager
       </Button>
