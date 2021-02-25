@@ -276,6 +276,7 @@ export default class ReportService {
     reportDetail.details.forEach((det) =>
       det.formatted.forEach((fmt) =>
         fmt.times.forEach((time) => {
+          time.day = fmt.dayDate;
           if (time.minutes > 0) reportTimes.push(time);
         })
       )

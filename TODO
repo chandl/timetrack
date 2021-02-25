@@ -1,10 +1,13 @@
 Features:
 * Enforce maximum notes size. (80 characters) ** check before creating report??
 * Add db backup logic (every 15 minutes?)
-* Add web UI to allow bulk import of times from CSV. -- low prio - script does this now
-* Add logic to un-merge entries (not as important)
+** Add web UI to allow bulk import of times from CSV. -- low prio - script does this now
+*** Add logic to un-merge entries (not as important)
 * Smart merge (suggest merging items that have similar notes)
 
 * Create an account system so I can test on 'prod'
 
+* Allow merging times with different service items -- alert user
+
 BUGS: 
+- create time outside of report range, change time to be in report range, it does not get automatically added to report
