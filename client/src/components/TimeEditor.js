@@ -57,7 +57,7 @@ const TimeEditor = ({
     }
   }
 
-  let charCount = post.notes.length;
+  let charCount = post.notes ? post.notes.length : 0;
   const setNotesLenError = () => {
     setError(`Notes must be 80 characters or less. (${charCount}/80)`);
   }
