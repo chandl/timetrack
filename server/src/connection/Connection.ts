@@ -1,18 +1,17 @@
 import { createConnection } from "typeorm";
 
 const MAX_RETRIES = 10;
-const RETRY_DELAY = 500;
 
 const getConnection = async () => {
-    let delay = RETRY_DELAY;
+    let delay = 500;
     let conn;
     for (let i = 0; i < MAX_RETRIES; i++) {
         let error;
-        createConnection().then(c => conn = c).catch(err => error = err);
+        await createConnection().then(c => conn = c).catch(err => error = err);
         if ( conn ) break;
-        console.log(`Failed to connect to database, retrying (attempt ${i + 1}/${MAX_RETRIES}) in ${delay}ms`);
+        console.log(`Failed to connect to database, retrying (attempt ${i + 1}/${MAX_RETRIES}) in ${delay}ms; error=${error}`);
         await new Promise(r => setTimeout(r, delay));
-        delay += RETRY_DELAY
+        delay *= 2;
     }
 
     if (!conn) {
