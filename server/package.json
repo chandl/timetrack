@@ -30,7 +30,7 @@
   "scripts": {
     "watch": "HOSTNAME=localhost PORT=3000 TZ=UTC DIR=$(pwd) ts-node-dev src/index.ts",
     "format": "npx prettier --write .",
-    "build": "tsc && cp scripts/start.sh build/ && cp -r reports build",
+    "build": "tsc && cp scripts/* build/ && mkdir build/reports",
     "build:docker": "npm run clean && npm run build && docker build -t timetrack-server:latest .",
     "clean": "rm -rf build/"
   }

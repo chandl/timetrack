@@ -12,7 +12,7 @@ import { TimeDto } from "../dto/TimeDto";
 const REPORT_DIR = `${process.env.DIR}/reports`;
 const HOST = process.env.HOSTNAME || "localhost:3000";
 
-const REPORT_TEMPLATE = readFileSync(`${REPORT_DIR}/tracktime-template.py`);
+const REPORT_TEMPLATE = readFileSync(`${process.env.DIR}/tracktime-template.py`);
 const PLACEHOLDER = "!!ENCODED_DATA_PLACEHOLDER!!";
 
 const handleErr = (err) =>
