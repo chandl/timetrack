@@ -27,9 +27,8 @@ const parseCsvToTimes = (lines) => {
     let parsedMin = parseInt(line.data[3]);
     const minutes = parsedMin ? parsedMin : 0;
 
-    // billable if not liaison and billable column is not marked 'N'
+    // billable if billable column is not marked 'N'
     const billable = !(
-      line.data[0] === "Liaison" ||
       (line.data.length > 5 && line.data[5] == "N")
     );
 

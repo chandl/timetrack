@@ -49,7 +49,7 @@ def wait(wait):
 if __name__ == "__main__":
     data = json.loads(base64.b64decode(RAW_DATA))
 
-    print("Starting Sophie's auto time tracker 9000\n==========")
+    print("Starting auto time tracker 9000\n==========")
     print("Adding times for {} to {}".format(data["report"]["startDate"], data["report"]["endDate"]))
     print("Open your time tracker and click on 'New Activity'. Don't touch your computer afterwards until all time is entered.")
 

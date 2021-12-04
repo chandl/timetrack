@@ -1,7 +1,4 @@
-Liaison time tracking simplifier 
-
-* enter time every day (minutes)
-* Liaison is never billable
+QuickBooks Pro Timer time tracking simplifier 
 
 Pages:
 * Track Time 

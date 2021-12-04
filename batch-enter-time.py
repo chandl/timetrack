@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# Helper script that imports data from a local spreadsheet
+# into the timetrack server
+
 import csv
 import requests
 from datetime import datetime
@@ -50,7 +54,7 @@ def parse_line(date, line):
         'billable': True
     }
 
-    if json['customer'] == "Liaison" or (len(args) > 5 and args[5] == 'N'):
+    if (len(args) > 5 and args[5] == 'N'):
         json['billable'] = False
 
     return json

@@ -10,7 +10,6 @@ echo "*** Building Client"
 cd ../client && npm run build && cp -R build/* ../build/public
 cd ..
 
-
 REGISTRY="registry.lan.chandl.io"
 if curl --output /dev/null --silent --head --fail "https://$REGISTRY"; then
     echo "*** Building and Pushing Multi-Arch Docker Image"
